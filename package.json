@@ -1,0 +1,23 @@
+{
+  "name": "caresync-hms",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
+    "lint": "eslint apps/ packages/ --ext .js,.jsx",
+    "test": "npm run test -w apps/api",
+    "build": "npm run build -w apps/web"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3"
+  }
+}
