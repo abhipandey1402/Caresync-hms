@@ -2,32 +2,19 @@ version: "3.9"
 
 services:
   api:
-    image: node:20-alpine
-    working_dir: /app
-    command: sh -c "npm install --omit=dev && npm run start -w apps/api"
+    image: ${ECR_REGISTRY:?err}/${ECR_REPOSITORY:-caresync-api}:${IMAGE_TAG:-latest}
+    restart: unless-stopped
     ports:
-      - "${API_PORT:-4000}:4000"
-    volumes:
-      - ../:/app
+      - "${API_PORT:-4000}:3000"
     env_file:
       - ../.env
+    environment:
+      PORT: 3000
+      API_HOST: 0.0.0.0
 
-  web:
-    image: node:20-alpine
-    working_dir: /app
-    command: sh -c "npm install && npm run build -w apps/web"
-    volumes:
-      - ../:/app
+  worker:
+    image: ${ECR_REGISTRY:?err}/${ECR_REPOSITORY:-caresync-api}:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    command: ["npm", "run", "worker", "-w", "apps/api"]
     env_file:
       - ../.env
-
-  nginx:
-    image: nginx:1.27-alpine
-    ports:
-      - "${NGINX_PORT:-8080}:80"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ../apps/web/dist:/usr/share/nginx/html:ro
-    depends_on:
-      - api
-      - web

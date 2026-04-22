@@ -27,7 +27,7 @@ export function AbdmCompliance() {
             <Banknote size={32} />
           </div>
           <h3 className="text-xl font-bold mb-3">₹100/Year Incentive</h3>
-          <p className="text-sm text-brand-textSec">Clinics earn ₹100 per new ABHA ID linked to their facility under NHA's incentive scheme.</p>
+          <p className="text-sm text-brand-textSec">Clinics earn ₹100 per new ABHA ID linked to their facility under NHA&apos;s incentive scheme.</p>
         </div>
 
         <div className="bg-white p-8 rounded-3xl shadow-sm border border-brand-border flex flex-col items-center">

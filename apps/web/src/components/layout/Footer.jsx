@@ -1,5 +1,4 @@
 import { Leaf, Phone, Mail, MapPin } from 'lucide-react';
-import { SectionWrapper } from '../ui/SectionWrapper';
 
 export function Footer() {
   return (

@@ -5,7 +5,7 @@ export function ProblemSolution() {
   return (
     <SectionWrapper id="problem-solution" bgClass="bg-white">
       <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-5xl font-display font-bold mb-4">Running a clinic shouldn't feel like this</h2>
+        <h2 className="text-3xl md:text-5xl font-display font-bold mb-4">Running a clinic shouldn&apos;t feel like this</h2>
         <p className="text-xl text-brand-textSec">Every day without CareSync looks the same</p>
       </div>
 
@@ -17,7 +17,7 @@ export function ProblemSolution() {
         </div>
         <div className="p-6 rounded-2xl bg-[#FFF5F5] border-l-4 border-l-[#FF4B4B] shadow-sm">
           <div className="text-2xl mb-4">💸</div>
-          <h3 className="font-bold text-lg mb-2">GST notice coming because your bills aren't compliant.</h3>
+          <h3 className="font-bold text-lg mb-2">GST notice coming because your bills aren&apos;t compliant.</h3>
           <p className="text-brand-textSec text-sm">Handwritten bills with no GSTIN, no serial numbers, no tax breakdown.</p>
         </div>
         <div className="p-6 rounded-2xl bg-[#FFF5F5] border-l-4 border-l-[#FF4B4B] shadow-sm">

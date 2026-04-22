@@ -3,7 +3,7 @@ import "./loadEnv.js";
 import { secretsAdapter } from "../shared/adapters/secrets.adapter.js";
 
 const bootstrapEnvSchema = z.object({
-  NODE_ENV: z.enum(["development", "staging", "production"]).default("development"),
+  NODE_ENV: z.enum(["development", "test", "staging", "production"]).default("development"),
   PORT: z.coerce.number().default(3000),
   API_HOST: z.string().default("0.0.0.0"),
   AWS_REGION: z.string().default("ap-south-1"),
@@ -13,7 +13,7 @@ const bootstrapEnvSchema = z.object({
 });
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "staging", "production"]).default("development"),
+  NODE_ENV: z.enum(["development", "test", "staging", "production"]).default("development"),
   PORT: z.coerce.number().default(3000),
   API_HOST: z.string().default("0.0.0.0"),
 

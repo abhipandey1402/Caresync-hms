@@ -65,4 +65,12 @@ describe("env validation", () => {
 
     expect(() => validateEnv(productionEnv)).not.toThrow();
   });
+
+  it("allows NODE_ENV=test for CI pipelines", () => {
+    const testEnv = buildValidEnv();
+
+    testEnv.NODE_ENV = "test";
+
+    expect(() => validateEnv(testEnv)).not.toThrow();
+  });
 });

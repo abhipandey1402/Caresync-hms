@@ -1,0 +1,92 @@
+name: Test & Lint
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - develop
+
+concurrency:
+  group: test-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      API_HOST: 127.0.0.1
+      PORT: 3000
+      MONGODB_URI: mongodb://127.0.0.1:27017/hms_test
+      JWT_PRIVATE_KEY: ${{ secrets.TEST_JWT_PRIVATE_KEY }}
+      JWT_PUBLIC_KEY: ${{ secrets.TEST_JWT_PUBLIC_KEY }}
+      JWT_ACCESS_EXPIRES: 15m
+      JWT_REFRESH_EXPIRES: 7d
+      AWS_REGION: ap-south-1
+      AWS_SSM_PREFIX: /caresync
+      S3_BUCKET_NAME: test-bucket
+      S3_PRESIGN_EXPIRES: 900
+      SQS_WHATSAPP_QUEUE_URL: https://sqs.test.amazonaws.com/test/whatsapp
+      SQS_SMS_QUEUE_URL: https://sqs.test.amazonaws.com/test/sms
+      SQS_PDF_QUEUE_URL: https://sqs.test.amazonaws.com/test/pdf
+      SQS_REPORT_QUEUE_URL: https://sqs.test.amazonaws.com/test/report
+      SES_FROM_EMAIL: ops@example.com
+      WABA_PHONE_ID: test-phone-id
+      WABA_ACCESS_TOKEN: test-waba-token
+      SMS_API_KEY: test-sms-key
+      SMS_SENDER_ID: CRSYNC
+      ABDM_BASE_URL: https://abdm.example.com
+      ABDM_CLIENT_ID: test-abdm-client-id
+      ABDM_CLIENT_SECRET: test-abdm-client-secret
+      ENCRYPTION_KEY: ${{ secrets.TEST_ENCRYPTION_KEY }}
+      FRONTEND_URL: http://localhost:5173
+      LOG_LEVEL: info
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX: 100
+      AUTH_RATE_LIMIT_MAX: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run backend tests with coverage gate
+        working-directory: apps/api
+        run: npm test -- --coverage --coverageThreshold='{"global":{"lines":70}}'
+
+      - name: Security audit
+        run: npm audit --audit-level=high
+
+      - name: Upload coverage report
+        if: ${{ secrets.CODECOV_TOKEN != '' }}
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./apps/api/coverage/lcov.info
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}

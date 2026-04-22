@@ -1,5 +1,4 @@
 import * as Icons from 'lucide-react';
-import { motion } from 'framer-motion';
 import { SectionWrapper } from '../ui/SectionWrapper';
 import { Badge } from '../ui/Badge';
 import { featuresConfig } from '../../config/features.config';
@@ -8,7 +7,7 @@ export function Features() {
   return (
     <SectionWrapper id="features" bgClass="bg-brand-bg">
       <div className="space-y-32">
-        {featuresConfig.map((feat, idx) => {
+        {featuresConfig.map((feat) => {
           const Icon = Icons[feat.iconName];
           const isLeft = feat.imageAlign === 'left';
           

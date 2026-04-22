@@ -15,7 +15,7 @@ export function TestimonialCard({ quote, author, clinic, stars, meta }) {
       </div>
       
       <p className="text-xl md:text-2xl font-display font-medium leading-relaxed flex-1 mb-8 text-brand-text">
-        "{quote}"
+        &ldquo;{quote}&rdquo;
       </p>
       
       <div>
