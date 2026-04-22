@@ -1,0 +1,164 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CareSync HMS private S3 storage, lifecycle rules, CloudFront, and EC2 IAM role.
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: prod
+  BucketName:
+    Type: String
+    Default: caresync-files-prod
+  AppInstanceProfileName:
+    Type: String
+    Default: caresync-api-prod
+  CloudFrontPriceClass:
+    Type: String
+    Default: PriceClass_200
+    AllowedValues:
+      - PriceClass_All
+      - PriceClass_200
+      - PriceClass_100
+
+Resources:
+  FilesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: TransitionToGlacierAfter365Days
+            Status: Enabled
+            Filter:
+              Prefix: ""
+            Transitions:
+              - StorageClass: GLACIER
+                TransitionInDays: 365
+          - Id: DeleteTempObjectsAfter7Days
+            Status: Enabled
+            Filter:
+              Prefix: temp/
+            ExpirationInDays: 7
+
+  FilesBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FilesBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontReadOnly
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${FilesBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${FilesCdnDistribution}"
+          - Sid: DenyNonTlsAccess
+            Effect: Deny
+            Principal: "*"
+            Action: "s3:*"
+            Resource:
+              - !GetAtt FilesBucket.Arn
+              - !Sub "${FilesBucket.Arn}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+
+  FilesOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${EnvironmentName}-caresync-files-oac"
+        Description: Origin access control for the private CareSync S3 bucket
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  FilesCdnDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub "CareSync ${EnvironmentName} static asset CDN"
+        HttpVersion: http2
+        IPV6Enabled: true
+        PriceClass: !Ref CloudFrontPriceClass
+        Origins:
+          - Id: FilesBucketOrigin
+            DomainName: !GetAtt FilesBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt FilesOriginAccessControl.Id
+            S3OriginConfig: {}
+        DefaultCacheBehavior:
+          TargetOriginId: FilesBucketOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+        DefaultRootObject: ""
+
+  AppEc2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AppInstanceProfileName}-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: !Sub "${EnvironmentName}-caresync-files-access"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: ListBucket
+                Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource: !GetAtt FilesBucket.Arn
+              - Sid: ReadWriteObjects
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:GetObjectVersion
+                Resource: !Sub "${FilesBucket.Arn}/*"
+
+  AppEc2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: !Ref AppInstanceProfileName
+      Roles:
+        - !Ref AppEc2Role
+
+Outputs:
+  FilesBucketName:
+    Value: !Ref FilesBucket
+  FilesBucketArn:
+    Value: !GetAtt FilesBucket.Arn
+  FilesCdnDistributionId:
+    Value: !Ref FilesCdnDistribution
+  FilesCdnDomainName:
+    Value: !GetAtt FilesCdnDistribution.DomainName
+  AppInstanceProfileName:
+    Value: !Ref AppEc2InstanceProfile

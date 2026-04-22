@@ -22,6 +22,7 @@ The API starts on `http://localhost:3000` and the web app starts on `http://loca
 - Local development uses the repo-root `.env` file. It is ignored by git.
 - Production must not read `.env`; the API only loads `.env` outside `production`.
 - Production secret values are resolved from AWS SSM Parameter Store before full env validation runs.
+- Private file storage is provisioned from `infra/aws/storage-stack.yml`; runtime usage is documented in `apps/api/docs/storage-setup.md`.
 
 ### Production SSM Parameters
 
