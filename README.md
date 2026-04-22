@@ -24,6 +24,7 @@ The API starts on `http://localhost:3000` and the web app starts on `http://loca
 - Production secret values are resolved from AWS SSM Parameter Store before full env validation runs.
 - Private file storage is provisioned from `infra/aws/storage-stack.yml`; runtime usage is documented in `apps/api/docs/storage-setup.md`.
 - CI/CD pipeline setup, GitHub environments, and deployment secrets are documented in `docs/cicd-setup.md`.
+- Database schema bootstrap, index initialization, and seed commands are documented in `apps/api/docs/database-setup.md`.
 
 ### Production SSM Parameters
 

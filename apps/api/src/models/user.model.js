@@ -1,0 +1,25 @@
+import { COLLECTION_NAMES, USER_ROLES } from "../database/constants.js";
+import { createTenantScopedSchema, registerModel } from "./modelUtils.js";
+
+const userSchema = createTenantScopedSchema(
+  {
+    name: { type: String, required: true, trim: true },
+    phone: { type: String, required: true, trim: true },
+    email: { type: String, trim: true, lowercase: true },
+    role: { type: String, enum: USER_ROLES, required: true },
+    passwordHash: { type: String, required: true, select: false },
+    isActive: { type: Boolean, default: true },
+    permissions: [{ type: String, trim: true }],
+    profile: {
+      registrationNumber: { type: String, trim: true },
+      specialization: { type: String, trim: true }
+    },
+    lastLoginAt: { type: Date, default: null }
+  },
+  { collection: COLLECTION_NAMES.users }
+);
+
+userSchema.index({ tenantId: 1, phone: 1 }, { unique: true });
+userSchema.index({ tenantId: 1, role: 1 });
+
+export const User = registerModel("User", userSchema);

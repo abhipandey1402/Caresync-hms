@@ -9,6 +9,9 @@
     "dev:watch": "nodemon server.js",
     "start": "node server.js",
     "worker": "node src/jobs/worker.js",
+    "db:indexes": "node scripts/createIndexes.js",
+    "seed": "node scripts/seed/index.js",
+    "db:plans": "node scripts/tests/queryPlans.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
     "lint": "eslint src --ext .js"
   },
