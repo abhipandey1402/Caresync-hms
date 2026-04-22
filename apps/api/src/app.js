@@ -2,14 +2,13 @@ import "./config/loadEnv.js";
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
-import morgan from "morgan";
 import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import { authRateLimiter, rateLimiter } from "./middlewares/rateLimiter.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
-import { logger } from "./config/logger.js";
+import { getRequestLogContext, logger } from "./config/logger.js";
 import routes from "./routes/index.js";
 import { getHealth } from "./controllers/health.controller.js";
 import { ApiError } from "./utils/index.js";
@@ -42,13 +41,22 @@ app.use(cookieParser());
 app.use(mongoSanitize());
 app.use(hpp());
 
-app.use(
-  morgan("combined", {
-    stream: {
-      write: (message) => logger.info(message.trim())
-    }
-  })
-);
+app.use((req, res, next) => {
+  const start = process.hrtime.bigint();
+
+  res.on("finish", () => {
+    logger.info("HTTP request completed", {
+      ...getRequestLogContext(req),
+      statusCode: res.statusCode,
+      contentLength: res.getHeader("content-length"),
+      userAgent: req.get("user-agent"),
+      ip: req.ip,
+      durationMs: Number(process.hrtime.bigint() - start) / 1_000_000
+    });
+  });
+
+  next();
+});
 
 app.use("/api/", rateLimiter);
 app.use("/api/v1/auth/login", authRateLimiter);

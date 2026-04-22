@@ -1,5 +1,5 @@
 import { ApiError } from "../utils/apiError.js";
-import { logger } from "../utils/logger.js";
+import { buildErrorLogMeta, logger } from "../utils/logger.js";
 
 export const errorHandler = (error, req, res, next) => {
   void next;
@@ -31,15 +31,13 @@ export const errorHandler = (error, req, res, next) => {
   }
 
   if (error instanceof ApiError) {
-    error.logError();
+    error.logError(buildErrorLogMeta(error, req));
     return res.status(error.statusCode).json(error.toResponse());
   }
 
   logger.error("Unhandled error", {
-    errorMessage: error?.message,
-    statusCode: error?.statusCode || 500,
-    path: req.path,
-    method: req.method
+    ...buildErrorLogMeta(error, req),
+    errorMessage: error?.message
   });
 
   return res.status(error?.statusCode || error?.status || 500).json({

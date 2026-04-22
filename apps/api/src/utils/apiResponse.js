@@ -1,7 +1,7 @@
-import { logger } from "./logger.js";
+import { getRequestLogContext, logger, sanitizeForLogging } from "./logger.js";
 
 class ApiResponse {
-  constructor(statusCode, data, message = "Success") {
+  constructor(statusCode, data, message = "Success", requestContext = null) {
     this.statusCode = statusCode;
     this.data = data;
     this.message = message;
@@ -9,11 +9,14 @@ class ApiResponse {
 
     if (this.success) {
       logger.info("ApiResponse sent", {
+        ...getRequestLogContext(requestContext || {}),
         statusCode: this.statusCode,
-        message: this.message
+        message: this.message,
+        data: process.env.NODE_ENV === "development" ? sanitizeForLogging(data) : undefined
       });
     } else {
       logger.warn("ApiResponse sent with warnings/errors", {
+        ...getRequestLogContext(requestContext || {}),
         statusCode: this.statusCode,
         message: this.message
       });

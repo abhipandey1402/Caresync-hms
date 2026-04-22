@@ -1,7 +1,7 @@
 import { ApiResponse } from "./apiResponse.js";
 
 export const sendResponse = (res, statusCode, data, message = "Success") => {
-  return res.status(statusCode).json(new ApiResponse(statusCode, data, message));
+  return res.status(statusCode).json(new ApiResponse(statusCode, data, message, res.req));
 };
 
 export const sendOk = (res, data, message = "Success") => {

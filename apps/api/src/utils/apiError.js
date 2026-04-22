@@ -1,3 +1,5 @@
+import { logger } from "./logger.js";
+
 class ApiError extends Error {
   constructor(
     statusCode,
@@ -30,8 +32,9 @@ class ApiError extends Error {
     };
   }
 
-  logError() {
-    console.error("ApiError occurred", {
+  logError(context = {}) {
+    logger.error("ApiError occurred", {
+      ...context,
       statusCode: this.statusCode,
       message: this.message,
       errors: this.errors,
