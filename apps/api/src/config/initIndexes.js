@@ -17,18 +17,66 @@ const normalizeExistingIndex = (index) => ({
 const matchesExpectedOptions = (existingOptions = {}, expectedOptions = {}) =>
   Object.entries(expectedOptions).every(([key, value]) => existingOptions[key] === value);
 
+/** Returns true when the index definition contains at least one "text" field value */
+const isTextIndex = (indexDef) => Object.values(indexDef).some((v) => v === "text");
+
+/**
+ * MongoDB stores text indexes with internal _fts/_ftsx keys and a `weights` map
+ * instead of the original field names, so we cannot do a plain key comparison.
+ * Instead we check that an existing text index on the collection covers exactly
+ * the same set of text fields (via its weights map) and the same non-text prefix
+ * fields (via its key).
+ */
+const textIndexMatches = (existingIndexes, definition) => {
+  const expectedTextFields = new Set(
+    Object.entries(definition.index)
+      .filter(([, v]) => v === "text")
+      .map(([k]) => k)
+  );
+
+  const expectedPrefixFields = Object.entries(definition.index)
+    .filter(([, v]) => v !== "text")
+    .map(([k, v]) => [k, v]);
+
+  return existingIndexes.some((existing) => {
+    // Must be a text index (has _fts key internally)
+    if (!existing.key || existing.key._fts !== "text") return false;
+
+    // Weights contains every field that was indexed as text
+    const weightedFields = new Set(Object.keys(existing.weights || {}));
+    if (weightedFields.size !== expectedTextFields.size) return false;
+    for (const field of expectedTextFields) {
+      if (!weightedFields.has(field)) return false;
+    }
+
+    // Verify non-text prefix fields match
+    for (const [field, order] of expectedPrefixFields) {
+      if (existing.key[field] !== order) return false;
+    }
+
+    return true;
+  });
+};
+
 export const verifyRegisteredIndexes = async (connection = mongoose.connection) => {
   const verification = [];
 
   for (const definition of INDEXES_TO_CREATE) {
     const existingIndexes = await connection.collection(definition.collection).indexes();
-    const normalizedIndexes = existingIndexes.map(normalizeExistingIndex);
-    const expectedShape = serializeIndexShape(definition.index);
-    const exists = normalizedIndexes.some(
-      (index) =>
-        index.key === expectedShape &&
-        matchesExpectedOptions(index.options, definition.options || {})
-    );
+
+    let exists;
+    if (isTextIndex(definition.index)) {
+      // Text indexes are stored differently in MongoDB — use field-set comparison
+      exists = textIndexMatches(existingIndexes, definition);
+    } else {
+      const normalizedIndexes = existingIndexes.map(normalizeExistingIndex);
+      const expectedShape = serializeIndexShape(definition.index);
+      exists = normalizedIndexes.some(
+        (index) =>
+          index.key === expectedShape &&
+          matchesExpectedOptions(index.options, definition.options || {})
+      );
+    }
 
     verification.push({
       ...definition,
