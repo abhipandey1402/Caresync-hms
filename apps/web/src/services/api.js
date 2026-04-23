@@ -35,11 +35,12 @@ api.interceptors.response.use(
         failedQueue.forEach(p => p.resolve(data.data.accessToken));
         failedQueue = [];
         return api(originalRequest);
-      } catch {
-        failedQueue.forEach(p => p.reject(error));
+      } catch (refreshError) {
+        failedQueue.forEach(p => p.reject(refreshError));
         failedQueue = [];
         useAuthStore.getState().logout();
         window.location.href = '/login';
+        return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }

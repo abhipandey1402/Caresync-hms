@@ -5,7 +5,7 @@ const patientSchema = createTenantScopedSchema(
   {
     uhid: { type: String, required: true, trim: true, uppercase: true },
     name: { type: String, required: true, trim: true },
-    phone: { type: String, trim: true },
+    phone: { type: String, required: true, trim: true },
     gender: { type: String, enum: ["male", "female", "other"], required: true },
     dateOfBirth: { type: Date, default: null },
     abhaId: { type: String, trim: true },
@@ -14,6 +14,7 @@ const patientSchema = createTenantScopedSchema(
       line1: { type: String, trim: true },
       line2: { type: String, trim: true },
       city: { type: String, trim: true },
+      district: { type: String, trim: true },
       state: { type: String, trim: true },
       pincode: { type: String, trim: true }
     },
@@ -22,7 +23,16 @@ const patientSchema = createTenantScopedSchema(
       phone: { type: String, trim: true },
       relation: { type: String, trim: true }
     },
-    notes: { type: String, trim: true }
+    notes: { type: String, trim: true },
+    allergies: [{ type: String, trim: true }],
+    chronicConditions: [
+      {
+        name: { type: String, required: true, trim: true },
+        icdCode: { type: String, trim: true }
+      }
+    ],
+    tags: [{ type: String, trim: true }],
+    abhaLinked: { type: Boolean, default: false }
   },
   { collection: COLLECTION_NAMES.patients }
 );
