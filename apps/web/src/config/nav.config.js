@@ -9,7 +9,7 @@ export const navConfig = {
   ],
   abdmBadge: "ABDM Compliant",
   ctas: [
-    { label: "Watch Demo", variant: "ghost", href: "#demo" },
-    { label: "Start Free Trial", variant: "primary", href: "#pricing" }
+    { label: "Login", variant: "ghost", href: "/login" },
+    { label: "Start Free Trial", variant: "primary", href: "/register" }
   ]
 };

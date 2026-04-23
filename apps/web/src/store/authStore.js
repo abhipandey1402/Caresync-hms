@@ -1,38 +1,30 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-const parseJwtPayload = (token) => {
-  if (!token) {
-    return null;
-  }
+export const useAuthStore = create(
+  persist(
+    (set, get) => ({
+      user: null,          // { _id, name, role, phone, tenantId, speciality }
+      tenant: null,        // { _id, name, slug, plan, settings }
+      accessToken: null,   // never persisted to localStorage — memory only
 
-  try {
-    const [, payload] = token.split('.');
+      setAuth: (user, tenant, accessToken) => set({ user, tenant, accessToken }),
+      setToken: (accessToken) => set({ accessToken }),
+      logout: () => set({ user: null, tenant: null, accessToken: null }),
 
-    if (!payload) {
-      return null;
-    }
-
-    const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const paddedPayload = normalizedPayload.padEnd(
-      normalizedPayload.length + ((4 - (normalizedPayload.length % 4 || 4)) % 4),
-      '='
-    );
-
-    return JSON.parse(atob(paddedPayload));
-  } catch {
-    return null;
-  }
-};
-
-export const useAuthStore = create((set) => ({
-  accessToken: null,
-  user: null,
-  isAuthenticated: false,
-  setToken: (token) =>
-    set({
-      accessToken: token,
-      user: parseJwtPayload(token),
-      isAuthenticated: !!token,
+      isAuthenticated: () => !!get().user && !!get().accessToken,
+      isAdmin: () => get().user?.role === 'admin',
+      isTrial: () => get().tenant?.isTrialActive,
+      trialDaysLeft: () => {
+        const end = get().tenant?.trialEndsAt;
+        if (!end) return 0;
+        return Math.max(0, Math.ceil((new Date(end) - new Date()) / 86400000));
+      },
     }),
-  logout: () => set({ accessToken: null, user: null, isAuthenticated: false }),
-}));
+    {
+      name: 'cura-auth',
+      // IMPORTANT: only persist user + tenant — NEVER persist accessToken
+      partialize: (state) => ({ user: state.user, tenant: state.tenant }),
+    }
+  )
+);

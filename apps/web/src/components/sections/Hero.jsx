@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Star, CheckCircle2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
+import { Link } from 'react-router-dom';
 
 export function Hero() {
   return (
@@ -35,7 +36,9 @@ export function Hero() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-12">
-            <Button size="lg">Start 90-Day Free Trial</Button>
+            <Link to="/register">
+              <Button size="lg">Start 90-Day Free Trial</Button>
+            </Link>
             <Button variant="ghost" size="lg">Watch 3-min Demo →</Button>
           </div>
 

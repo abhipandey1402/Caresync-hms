@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Check, X } from 'lucide-react';
 import { Button } from './Button';
+import { Link } from 'react-router-dom';
 
 export function PricingCard({ plan, isAnnual }) {
   const price = isAnnual ? plan.priceAnnual : plan.priceMonthly;
@@ -40,7 +41,9 @@ export function PricingCard({ plan, isAnnual }) {
         ))}
       </ul>
       
-      <Button variant={plan.ctaVariant} className="w-full">{plan.cta}</Button>
+      <Link to="/register">
+        <Button variant={plan.ctaVariant} className="w-full">{plan.cta}</Button>
+      </Link>
     </motion.div>
   );
 }

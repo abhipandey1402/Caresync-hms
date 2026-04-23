@@ -31,8 +31,9 @@ api.interceptors.response.use(
       isRefreshing = true;
       try {
         const { data } = await axios.post('/api/v1/auth/refresh', {}, { withCredentials: true });
-        useAuthStore.getState().setToken(data.data.accessToken);
-        failedQueue.forEach(p => p.resolve(data.data.accessToken));
+        const newToken = data.data.accessToken;
+        useAuthStore.getState().setToken(newToken);
+        failedQueue.forEach(p => p.resolve(newToken));
         failedQueue = [];
         return api(originalRequest);
       } catch (refreshError) {

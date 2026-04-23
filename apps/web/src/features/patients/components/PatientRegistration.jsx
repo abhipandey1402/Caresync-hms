@@ -31,9 +31,9 @@ export const PatientRegistration = () => {
       const patient = await registerPatient.mutateAsync(data);
       if (patient.offline) {
         // Patient saved offline
-        navigate('/patients', { state: { message: "Patient saved offline. Will sync when online." }});
+        navigate('/dashboard/patients', { state: { message: "Patient saved offline. Will sync when online." }});
       } else {
-        navigate(`/patients/${patient._id}`);
+        navigate(`/dashboard/patients/${patient._id}`);
       }
     } catch (err) {
       setError(err.response?.data?.message || err.message || "Failed to register patient");
@@ -113,7 +113,7 @@ export const PatientRegistration = () => {
         <div className="pt-4 flex justify-end gap-3">
           <button
             type="button"
-            onClick={() => navigate('/patients')}
+            onClick={() => navigate('/dashboard/patients')}
             className="px-6 py-2 border border-brand-border text-brand-text-sec rounded-lg hover:bg-brand-muted transition-colors font-medium"
           >
             Cancel

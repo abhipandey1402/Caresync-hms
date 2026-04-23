@@ -1,6 +1,7 @@
 import { SectionWrapper } from '../ui/SectionWrapper';
 import { Button } from '../ui/Button';
 import { ShieldCheck, MapPin, Star, Banknote, Headphones } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function FinalCTA() {
   return (
@@ -18,9 +19,11 @@ export function FinalCTA() {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-          <Button size="lg" className="bg-white text-brand-green hover:bg-brand-muted border-none relative overflow-hidden group">
-            <span className="relative z-10">Start 90-Day Free Trial</span>
-          </Button>
+          <Link to="/register">
+            <Button size="lg" className="bg-white text-brand-green hover:bg-brand-muted border-none relative overflow-hidden group">
+              <span className="relative z-10">Start 90-Day Free Trial</span>
+            </Button>
+          </Link>
           <Button size="lg" className="bg-transparent text-white border-2 border-white hover:bg-white/10">
             Talk to Us on WhatsApp
           </Button>

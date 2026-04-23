@@ -20,7 +20,7 @@ export const PatientProfile = () => {
     return (
       <div className="p-6 text-center text-red-600 font-body">
         <p>Failed to load patient profile.</p>
-        <button onClick={() => navigate('/patients')} className="mt-4 text-brand-green font-medium">Go back to search</button>
+        <button onClick={() => navigate('/dashboard/patients')} className="mt-4 text-brand-green font-medium">Go back to search</button>
       </div>
     );
   }
@@ -30,7 +30,7 @@ export const PatientProfile = () => {
       {/* Header Banner */}
       <div className="flex items-center gap-4">
         <button 
-          onClick={() => navigate('/patients')}
+          onClick={() => navigate('/dashboard/patients')}
           className="p-2 hover:bg-brand-muted rounded-full transition-colors"
         >
           <ArrowLeft className="w-5 h-5 text-brand-text-sec" />

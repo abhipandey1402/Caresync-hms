@@ -35,7 +35,7 @@ export const PatientSearch = () => {
             </div>
           )}
           <button 
-            onClick={() => navigate('/patients/new')}
+            onClick={() => navigate('/dashboard/patients/new')}
             className="px-4 py-2 bg-brand-green text-white rounded-lg hover:bg-brand-green-mid transition-colors flex items-center gap-2 font-medium"
           >
             <Plus className="w-5 h-5" />
@@ -71,7 +71,7 @@ export const PatientSearch = () => {
             <h3 className="text-lg font-medium text-brand-text mb-1 font-display">No patients found</h3>
             <p className="text-brand-text-sec mb-6">No matches for &quot;{query}&quot;.</p>
             <button 
-              onClick={() => navigate('/patients/new')}
+              onClick={() => navigate('/dashboard/patients/new')}
               className="px-4 py-2 border border-brand-border text-brand-text-sec rounded-lg hover:bg-brand-muted transition-colors font-medium"
             >
               Register as New Patient
@@ -86,7 +86,7 @@ export const PatientSearch = () => {
                 key={patient._id} 
               >
                 <button
-                  onClick={() => navigate(`/patients/${patient._id}`)}
+                  onClick={() => navigate(`/dashboard/patients/${patient._id}`)}
                   className="w-full text-left p-4 hover:bg-brand-muted/50 transition-colors flex items-center justify-between group"
                   style={{ minHeight: '44px' }}
                 >
