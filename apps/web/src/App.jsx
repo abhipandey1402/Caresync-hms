@@ -26,6 +26,7 @@ import { AuditLogs } from './features/settings/components/AuditLogs';
 import { DashboardShell } from './components/layout/DashboardShell';
 import { DashboardHome } from './features/dashboard/components/DashboardHome';
 import { NotificationCenter } from './features/dashboard/components/NotificationCenter';
+import { OpdPage } from './features/opd/components/OpdPage';
 
 function LandingPage() {
   return (
@@ -67,8 +68,8 @@ export default function App() {
           <Route path="settings/billing" element={<div className="p-4">Billing & Subscription Placeholder</div>} />
 
           {/* Placeholders for upcoming epics */}
-          <Route path="opd" element={<div className="p-4">OPD Module Placeholder</div>} />
-          <Route path="opd/new" element={<div className="p-4">New OPD Visit Placeholder</div>} />
+          <Route path="opd" element={<ProtectedRoute resource="opd" action="read"><OpdPage /></ProtectedRoute>} />
+          <Route path="opd/new" element={<ProtectedRoute resource="opd" action="write"><OpdPage /></ProtectedRoute>} />
           <Route path="billing" element={<div className="p-4">Billing Module Placeholder</div>} />
           <Route path="billing/new" element={<div className="p-4">New Bill Placeholder</div>} />
           <Route path="pharmacy" element={<div className="p-4">Pharmacy Module Placeholder</div>} />

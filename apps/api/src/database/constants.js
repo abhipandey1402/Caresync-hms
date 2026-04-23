@@ -33,6 +33,7 @@ export const VISIT_STATUSES = Object.freeze([
   "checked_in",
   "in_consultation",
   "completed",
+  "no_show",
   "cancelled"
 ]);
 
