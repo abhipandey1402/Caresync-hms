@@ -56,6 +56,7 @@ const envSchema = z.object({
   LOG_LEVEL: z.string().default("info"),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(15 * 60 * 1000),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
+  AUTH_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60 * 1000),
   AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(10),
   CLOUDWATCH_LOG_GROUP: z.string().optional(),
   CLOUDWATCH_LOG_STREAM: z.string().optional()

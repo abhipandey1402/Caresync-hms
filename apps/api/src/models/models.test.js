@@ -15,7 +15,11 @@ describe("mongoose model definitions", () => {
       expect.arrayContaining([[{ slug: 1 }, expect.objectContaining({ unique: true })]])
     );
     expect(User.schema.indexes()).toEqual(
-      expect.arrayContaining([[{ tenantId: 1, phone: 1 }, expect.objectContaining({ unique: true })]])
+      expect.arrayContaining([
+        [{ tenantId: 1, phone: 1 }, expect.objectContaining({ unique: true })],
+        [{ phone: 1 }, expect.objectContaining({ unique: true })],
+        [{ "refreshTokens.tokenId": 1 }, expect.objectContaining({ sparse: true })]
+      ])
     );
     expect(Patient.schema.indexes()).toEqual(
       expect.arrayContaining([
@@ -36,7 +40,10 @@ describe("mongoose model definitions", () => {
       expect.arrayContaining([[{ tenantId: 1, "batches.expiryDate": 1 }, expect.any(Object)]])
     );
     expect(AuditLog.schema.indexes()).toEqual(
-      expect.arrayContaining([[{ timestamp: 1 }, expect.objectContaining({ expireAfterSeconds: 63072000 })]])
+      expect.arrayContaining([
+        [{ tenantId: 1, resource: 1, timestamp: -1 }, expect.any(Object)],
+        [{ timestamp: 1 }, expect.objectContaining({ expireAfterSeconds: 63072000 })]
+      ])
     );
     expect(Sequence.schema.indexes()).toEqual(
       expect.arrayContaining([[{ tenantId: 1, type: 1 }, expect.objectContaining({ unique: true })]])

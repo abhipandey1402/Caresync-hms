@@ -4,10 +4,17 @@ import { createTenantScopedSchema, registerModel } from "./modelUtils.js";
 
 const auditLogSchema = createTenantScopedSchema(
   {
-    actorId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
-    entityType: { type: String, required: true, trim: true },
-    entityId: { type: String, required: true, trim: true },
-    action: { type: String, required: true, trim: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    action: {
+      type: String,
+      enum: ["create", "update", "delete"],
+      required: true,
+      trim: true
+    },
+    resource: { type: String, required: true, trim: true },
+    resourceId: { type: String, required: true, trim: true },
+    ipAddress: { type: String, trim: true, default: null },
+    userAgent: { type: String, trim: true, maxlength: 200, default: null },
     timestamp: { type: Date, default: Date.now, required: true },
     meta: { type: mongoose.Schema.Types.Mixed, default: {} }
   },
@@ -15,6 +22,7 @@ const auditLogSchema = createTenantScopedSchema(
 );
 
 auditLogSchema.index({ tenantId: 1, timestamp: -1 });
+auditLogSchema.index({ tenantId: 1, resource: 1, timestamp: -1 });
 auditLogSchema.index({ timestamp: 1 }, { expireAfterSeconds: 63072000 });
 
 export const AuditLog = registerModel("AuditLog", auditLogSchema);

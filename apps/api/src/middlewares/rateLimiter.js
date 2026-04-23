@@ -1,9 +1,9 @@
 import rateLimit from "express-rate-limit";
 import { ApiError } from "../utils/apiError.js";
 
-const buildLimiter = (code, message, limit) =>
+const buildLimiter = (code, message, limit, windowMs = Number(process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000)) =>
   rateLimit({
-    windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000),
+    windowMs,
     limit,
     standardHeaders: "draft-7",
     legacyHeaders: false,
@@ -21,5 +21,6 @@ export const rateLimiter = buildLimiter(
 export const authRateLimiter = buildLimiter(
   "AUTH_RATE_LIMITED",
   "Too many login attempts, please try again later",
-  Number(process.env.AUTH_RATE_LIMIT_MAX || 10)
+  Number(process.env.AUTH_RATE_LIMIT_MAX || 10),
+  Number(process.env.AUTH_RATE_LIMIT_WINDOW_MS || 60 * 1000)
 );

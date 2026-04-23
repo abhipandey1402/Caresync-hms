@@ -21,6 +21,17 @@ describe("index initialization verification", () => {
             ];
           }
 
+          if (name === COLLECTION_NAMES.users) {
+            return [
+              { key: { _id: 1 }, name: "_id_" },
+              {
+                key: { "refreshTokens.tokenId": 1 },
+                name: "refreshTokens.tokenId_1",
+                sparse: true
+              }
+            ];
+          }
+
           return [{ key: { _id: 1 }, name: "_id_" }];
         }
       })
@@ -33,5 +44,13 @@ describe("index initialization verification", () => {
     );
 
     expect(auditTtl.exists).toBe(true);
+
+    const userRefreshTokenIndex = verification.find(
+      ({ collection, index }) =>
+        collection === COLLECTION_NAMES.users &&
+        JSON.stringify(index) === JSON.stringify({ "refreshTokens.tokenId": 1 })
+    );
+
+    expect(userRefreshTokenIndex.exists).toBe(true);
   });
 });

@@ -10,7 +10,8 @@ const normalizeExistingIndex = (index) => ({
   key: serializeIndexShape(index.key),
   options: {
     unique: index.unique,
-    expireAfterSeconds: index.expireAfterSeconds
+    expireAfterSeconds: index.expireAfterSeconds,
+    sparse: index.sparse
   }
 });
 

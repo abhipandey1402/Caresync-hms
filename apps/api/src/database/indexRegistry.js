@@ -5,7 +5,9 @@ export const INDEXES_TO_CREATE = Object.freeze([
   { collection: COLLECTION_NAMES.tenants, index: { planExpiresAt: 1 } },
 
   { collection: COLLECTION_NAMES.users, index: { tenantId: 1, phone: 1 }, options: { unique: true } },
+  { collection: COLLECTION_NAMES.users, index: { phone: 1 }, options: { unique: true } },
   { collection: COLLECTION_NAMES.users, index: { tenantId: 1, role: 1 } },
+  { collection: COLLECTION_NAMES.users, index: { "refreshTokens.tokenId": 1 }, options: { sparse: true } },
 
   { collection: COLLECTION_NAMES.patients, index: { tenantId: 1, uhid: 1 }, options: { unique: true } },
   { collection: COLLECTION_NAMES.patients, index: { tenantId: 1, phone: 1 } },
@@ -45,6 +47,7 @@ export const INDEXES_TO_CREATE = Object.freeze([
   { collection: COLLECTION_NAMES.ipdAdmissions, index: { tenantId: 1, bedId: 1, status: 1 } },
 
   { collection: COLLECTION_NAMES.auditLogs, index: { tenantId: 1, timestamp: -1 } },
+  { collection: COLLECTION_NAMES.auditLogs, index: { tenantId: 1, resource: 1, timestamp: -1 } },
   {
     collection: COLLECTION_NAMES.auditLogs,
     index: { timestamp: 1 },

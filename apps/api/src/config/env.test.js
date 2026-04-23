@@ -32,6 +32,7 @@ const buildValidEnv = () => ({
   LOG_LEVEL: "info",
   RATE_LIMIT_WINDOW_MS: "900000",
   RATE_LIMIT_MAX: "100",
+  AUTH_RATE_LIMIT_WINDOW_MS: "60000",
   AUTH_RATE_LIMIT_MAX: "10"
 });
 
