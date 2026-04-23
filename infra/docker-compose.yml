@@ -6,7 +6,7 @@ services:
     working_dir: /app
     command: sh -c "npm install && npm run dev -w apps/api"
     ports:
-      - "${API_PORT:-4000}:4000"
+      - "${API_PORT:-8080}:8080"
     volumes:
       - ../:/app
     env_file:

@@ -4,7 +4,7 @@ import { secretsAdapter } from "../shared/adapters/secrets.adapter.js";
 
 const bootstrapEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "staging", "production"]).default("development"),
-  PORT: z.coerce.number().default(3000),
+  PORT: z.coerce.number().default(8080),
   API_HOST: z.string().default("0.0.0.0"),
   AWS_REGION: z.string().default("ap-south-1"),
   AWS_ACCESS_KEY_ID: z.string().optional(),
@@ -14,7 +14,7 @@ const bootstrapEnvSchema = z.object({
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "staging", "production"]).default("development"),
-  PORT: z.coerce.number().default(3000),
+  PORT: z.coerce.number().default(8080),
   API_HOST: z.string().default("0.0.0.0"),
 
   MONGODB_URI: z.string().url(),

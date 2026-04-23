@@ -5,11 +5,11 @@ services:
     image: ${ECR_REGISTRY:?err}/${ECR_REPOSITORY:-caresync-api}:${IMAGE_TAG:-latest}
     restart: unless-stopped
     ports:
-      - "${API_PORT:-4000}:3000"
+      - "${API_PORT:-8080}:8080"
     env_file:
       - ../.env
     environment:
-      PORT: 3000
+      PORT: 8080
       API_HOST: 0.0.0.0
 
   worker:

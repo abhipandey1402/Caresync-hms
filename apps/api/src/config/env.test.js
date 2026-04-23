@@ -2,7 +2,7 @@ import { getProductionSsmParameters, validateEnv } from "./env.js";
 
 const buildValidEnv = () => ({
   NODE_ENV: "development",
-  PORT: "3000",
+  PORT: "8080",
   API_HOST: "0.0.0.0",
   MONGODB_URI: "mongodb://127.0.0.1:27017/caresync-hms",
   JWT_PRIVATE_KEY: "p".repeat(120),
