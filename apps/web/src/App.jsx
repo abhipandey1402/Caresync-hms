@@ -12,7 +12,7 @@ import { ComparisonTable } from './components/sections/ComparisonTable';
 import { FinalCTA } from './components/sections/FinalCTA';
 import { WhatsAppFAB } from './components/ui/WhatsAppFAB';
 
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './components/router/ProtectedRoute';
 import { PatientSearch } from './features/patients/components/PatientSearch';
 import { PatientRegistration } from './features/patients/components/PatientRegistration';
@@ -22,6 +22,10 @@ import { LoginPage } from './features/auth/components/LoginPage';
 import { AccessDeniedPage } from './features/auth/components/AccessDeniedPage';
 import { StaffManagement } from './features/settings/components/StaffManagement';
 import { AuditLogs } from './features/settings/components/AuditLogs';
+
+import { DashboardShell } from './components/layout/DashboardShell';
+import { DashboardHome } from './features/dashboard/components/DashboardHome';
+import { NotificationCenter } from './features/dashboard/components/NotificationCenter';
 
 function LandingPage() {
   return (
@@ -45,29 +49,54 @@ export default function App() {
   const location = useLocation();
   const isAuthPage = ['/login', '/register', '/access-denied'].includes(location.pathname);
   const isDashboard = location.pathname.startsWith('/dashboard');
-  const hideShell = isAuthPage || isDashboard;
+
+  if (isDashboard) {
+    return (
+      <Routes>
+        <Route path="/dashboard" element={<ProtectedRoute><DashboardShell /></ProtectedRoute>}>
+          <Route index element={<DashboardHome />} />
+          <Route path="notifications" element={<NotificationCenter />} />
+          
+          <Route path="patients" element={<ProtectedRoute resource="patients" action="read"><PatientSearch /></ProtectedRoute>} />
+          <Route path="patients/new" element={<ProtectedRoute resource="patients" action="write"><PatientRegistration /></ProtectedRoute>} />
+          <Route path="patients/:id" element={<ProtectedRoute resource="patients" action="read"><PatientProfile /></ProtectedRoute>} />
+          
+          <Route path="settings" element={<Navigate to="staff" replace />} />
+          <Route path="settings/staff" element={<ProtectedRoute resource="settings" action="*"><StaffManagement /></ProtectedRoute>} />
+          <Route path="settings/audit-logs" element={<ProtectedRoute resource="settings" action="*"><AuditLogs /></ProtectedRoute>} />
+          <Route path="settings/billing" element={<div className="p-4">Billing & Subscription Placeholder</div>} />
+
+          {/* Placeholders for upcoming epics */}
+          <Route path="opd" element={<div className="p-4">OPD Module Placeholder</div>} />
+          <Route path="opd/new" element={<div className="p-4">New OPD Visit Placeholder</div>} />
+          <Route path="billing" element={<div className="p-4">Billing Module Placeholder</div>} />
+          <Route path="billing/new" element={<div className="p-4">New Bill Placeholder</div>} />
+          <Route path="pharmacy" element={<div className="p-4">Pharmacy Module Placeholder</div>} />
+          <Route path="pharmacy/pos" element={<div className="p-4">Pharmacy POS Placeholder</div>} />
+          <Route path="pharmacy/purchase" element={<div className="p-4">Purchase Entry Placeholder</div>} />
+          <Route path="pharmacy/inventory" element={<div className="p-4">Inventory Placeholder</div>} />
+          <Route path="pharmacy/reports" element={<div className="p-4">Pharmacy Reports Placeholder</div>} />
+          <Route path="pharmacy/sales" element={<div className="p-4">Sales Log Placeholder</div>} />
+          <Route path="ipd" element={<div className="p-4">IPD Module Placeholder</div>} />
+          <Route path="ipd/admit" element={<div className="p-4">Admit Patient Placeholder</div>} />
+          <Route path="ipd/vitals" element={<div className="p-4">Vitals Placeholder</div>} />
+          <Route path="reports" element={<div className="p-4">Reports Module Placeholder</div>} />
+          <Route path="prescriptions" element={<div className="p-4">Prescriptions Placeholder</div>} />
+          <Route path="prescriptions/new" element={<div className="p-4">New Prescription Placeholder</div>} />
+        </Route>
+      </Routes>
+    );
+  }
 
   return (
     <div className="bg-brand-bg text-brand-text min-h-screen flex flex-col">
-      {!hideShell && <Header />}
-      <main className={`flex-grow ${!hideShell ? 'pt-24 pb-16' : ''}`}>
+      {!isAuthPage && <Header />}
+      <main className={`flex-grow ${!isAuthPage ? 'pt-24 pb-16' : ''}`}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          
-          {/* Public Auth Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/access-denied" element={<AccessDeniedPage />} />
-
-          {/* Protected Routes */}
-          <Route path="/dashboard" element={<ProtectedRoute resource="dashboard" action="read"><div>Dashboard Home Placeholder</div></ProtectedRoute>} />
-          
-          <Route path="/dashboard/patients" element={<ProtectedRoute resource="patients" action="read"><PatientSearch /></ProtectedRoute>} />
-          <Route path="/dashboard/patients/new" element={<ProtectedRoute resource="patients" action="write"><PatientRegistration /></ProtectedRoute>} />
-          <Route path="/dashboard/patients/:id" element={<ProtectedRoute resource="patients" action="read"><PatientProfile /></ProtectedRoute>} />
-          
-          <Route path="/dashboard/settings/staff" element={<ProtectedRoute resource="settings" action="*"><StaffManagement /></ProtectedRoute>} />
-          <Route path="/dashboard/settings/audit-logs" element={<ProtectedRoute resource="settings" action="*"><AuditLogs /></ProtectedRoute>} />
         </Routes>
       </main>
       {!isAuthPage && <Footer />}

@@ -32,7 +32,10 @@ api.interceptors.response.use(
       try {
         const { data } = await axios.post('/api/v1/auth/refresh', {}, { withCredentials: true });
         const newToken = data.data.accessToken;
-        useAuthStore.getState().setToken(newToken);
+        const user = data.data.user;
+        const tenant = { _id: data.data.tenantId, slug: data.data.slug };
+        
+        useAuthStore.getState().setAuth(user, tenant, newToken);
         failedQueue.forEach(p => p.resolve(newToken));
         failedQueue = [];
         return api(originalRequest);

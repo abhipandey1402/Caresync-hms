@@ -296,7 +296,13 @@ const registerTenant = async (payload, options = {}) => {
     slug: tenant.slug,
     trialEndsAt: tenant.trialEndsAt,
     accessToken: tokens.accessToken,
-    refreshToken: tokens.refreshToken
+    refreshToken: tokens.refreshToken,
+    user: {
+      _id: adminUser._id,
+      name: adminUser.name,
+      role: adminUser.role,
+      phone: adminUser.phone
+    }
   };
 };
 
@@ -354,7 +360,14 @@ const login = async ({ phone, password, tenantSlug }, options = {}) => {
     slug: tenant.slug,
     trialEndsAt: tenant.trialEndsAt,
     accessToken: tokens.accessToken,
-    refreshToken: tokens.refreshToken
+    refreshToken: tokens.refreshToken,
+    user: {
+      _id: user._id,
+      name: user.name,
+      role: user.role,
+      phone: user.phone,
+      speciality: user.speciality
+    }
   };
 };
 
@@ -408,7 +421,14 @@ const refreshSession = async (rawRefreshToken, options = {}) => {
     tenantId: tenant._id,
     slug: tenant.slug,
     accessToken: tokens.accessToken,
-    refreshToken: tokens.refreshToken
+    refreshToken: tokens.refreshToken,
+    user: {
+      _id: user._id,
+      name: user.name,
+      role: user.role,
+      phone: user.phone,
+      speciality: user.speciality
+    }
   };
 };
 

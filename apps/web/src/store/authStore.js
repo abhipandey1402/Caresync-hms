@@ -12,7 +12,7 @@ export const useAuthStore = create(
       setToken: (accessToken) => set({ accessToken }),
       logout: () => set({ user: null, tenant: null, accessToken: null }),
 
-      isAuthenticated: () => !!get().user && !!get().accessToken,
+      isAuthenticated: () => !!get().user,
       isAdmin: () => get().user?.role === 'admin',
       isTrial: () => get().tenant?.isTrialActive,
       trialDaysLeft: () => {

@@ -48,7 +48,13 @@ export const registerTenant = asyncHandler(async (req, res) => {
 
   setRefreshTokenCookie(res, registration.refreshToken);
 
-  return sendCreated(res, registration, "Tenant registered successfully");
+  return sendCreated(res, {
+    tenantId: registration.tenantId,
+    slug: registration.slug,
+    trialEndsAt: registration.trialEndsAt,
+    accessToken: registration.accessToken,
+    user: registration.user
+  }, "Tenant registered successfully");
 });
 
 export const login = asyncHandler(async (req, res) => {
@@ -71,7 +77,8 @@ export const login = asyncHandler(async (req, res) => {
       tenantId: session.tenantId,
       slug: session.slug,
       trialEndsAt: session.trialEndsAt,
-      accessToken: session.accessToken
+      accessToken: session.accessToken,
+      user: session.user
     },
     "Login successful"
   );
@@ -89,7 +96,8 @@ export const refresh = asyncHandler(async (req, res) => {
     {
       tenantId: session.tenantId,
       slug: session.slug,
-      accessToken: session.accessToken
+      accessToken: session.accessToken,
+      user: session.user
     },
     "Session refreshed successfully"
   );

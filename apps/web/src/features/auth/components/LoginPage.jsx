@@ -63,12 +63,8 @@ export const LoginPage = () => {
     
     try {
       const response = await api.post('/auth/login', data);
-      const { tenantId, slug, trialEndsAt, accessToken } = response.data.data;
-
-      // Decode JWT payload (base64) to extract user identity — no library needed
-      const payload = JSON.parse(atob(accessToken.split('.')[1]));
+      const { tenantId, slug, trialEndsAt, accessToken, user } = response.data.data;
       
-      const user = { _id: payload.sub, role: payload.role, tenantId: payload.tid };
       const tenant = { _id: tenantId, slug, trialEndsAt };
 
       setAuth(user, tenant, accessToken);
