@@ -7,6 +7,7 @@ export { MedicineMaster } from "./medicineMaster.model.js";
 export { Notification } from "./notification.model.js";
 export { Otp } from "./otp.model.js";
 export { Patient } from "./patient.model.js";
+export { PharmacyAlertLog } from "./pharmacyAlertLog.model.js";
 export { Prescription } from "./prescription.model.js";
 export { RxTemplate } from "./rxTemplate.model.js";
 export { Sequence } from "./sequence.model.js";

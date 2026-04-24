@@ -29,6 +29,7 @@ import { NotificationCenter } from './features/dashboard/components/Notification
 import { OpdPage } from './features/opd/components/OpdPage';
 import { BillingPage } from './features/billing/components/BillingPage';
 import { PrescriptionPage } from './features/prescriptions/components/PrescriptionPage';
+import { PharmacyPage } from './features/pharmacy/components/PharmacyPage';
 
 function LandingPage() {
   return (
@@ -74,12 +75,9 @@ export default function App() {
           <Route path="opd/new" element={<ProtectedRoute resource="opd" action="write"><OpdPage /></ProtectedRoute>} />
           <Route path="billing" element={<ProtectedRoute resource="billing" action="read"><BillingPage /></ProtectedRoute>} />
           <Route path="billing/new" element={<ProtectedRoute resource="billing" action="write"><BillingPage /></ProtectedRoute>} />
-          <Route path="pharmacy" element={<div className="p-4">Pharmacy Module Placeholder</div>} />
-          <Route path="pharmacy/pos" element={<div className="p-4">Pharmacy POS Placeholder</div>} />
-          <Route path="pharmacy/purchase" element={<div className="p-4">Purchase Entry Placeholder</div>} />
-          <Route path="pharmacy/inventory" element={<div className="p-4">Inventory Placeholder</div>} />
-          <Route path="pharmacy/reports" element={<div className="p-4">Pharmacy Reports Placeholder</div>} />
-          <Route path="pharmacy/sales" element={<div className="p-4">Sales Log Placeholder</div>} />
+          
+          <Route path="pharmacy/*" element={<ProtectedRoute resource="pharmacy" action="read"><PharmacyPage /></ProtectedRoute>} />
+          
           <Route path="ipd" element={<div className="p-4">IPD Module Placeholder</div>} />
           <Route path="ipd/admit" element={<div className="p-4">Admit Patient Placeholder</div>} />
           <Route path="ipd/vitals" element={<div className="p-4">Vitals Placeholder</div>} />

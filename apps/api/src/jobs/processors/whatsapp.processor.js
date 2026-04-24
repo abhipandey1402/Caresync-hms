@@ -35,10 +35,71 @@ export const processWhatsApp = async (
 ) => {
   const { type, billId, tenantId, pdfKey, prescriptionId } = payload;
 
-  if (!["send-invoice", "bill-receipt", "tenant.welcome", "send-prescription"].includes(type)) {
+  if (!["send-invoice", "bill-receipt", "tenant.welcome", "send-prescription", "expiry-alert", "low-stock-alert"].includes(type)) {
     logger.info("[whatsapp] Unsupported job skipped", {
       jobType: type || "default"
     });
+    return;
+  }
+
+  if (type === "expiry-alert" || type === "low-stock-alert") {
+    const tenant = await TenantModel.findById(tenantId).lean();
+
+    if (!tenant) {
+      throw new Error("Tenant not found for pharmacy alert delivery");
+    }
+
+    const recipient = normalizeIndianPhone(tenant.contactPhone || tenant.phone);
+
+    if (!recipient) {
+      logger.warn("[whatsapp] No recipient phone for pharmacy alert", { tenantId, type });
+      return;
+    }
+
+    if (type === "expiry-alert") {
+      const { medicines, daysUntilExpiry } = payload;
+      const medicineList = (medicines || [])
+        .map((m) => `• ${m.name} (Batch ${m.batch}) — Exp ${m.expiry}, Qty: ${m.qty}`)
+        .join("\n");
+
+      await whatsappAdapter.sendTemplateMessage({
+        to: recipient,
+        template: "pharmacy_expiry_alert",
+        language: "en",
+        components: [
+          {
+            type: "body",
+            parameters: [
+              { type: "text", text: String(daysUntilExpiry) },
+              { type: "text", text: String((medicines || []).length) },
+              { type: "text", text: medicineList }
+            ]
+          }
+        ]
+      });
+    } else {
+      const { medicines } = payload;
+      const medicineList = (medicines || [])
+        .map((m) => `• ${m.name} — Stock: ${m.totalQty} (Reorder at: ${m.reorderLevel})`)
+        .join("\n");
+
+      await whatsappAdapter.sendTemplateMessage({
+        to: recipient,
+        template: "pharmacy_low_stock_alert",
+        language: "en",
+        components: [
+          {
+            type: "body",
+            parameters: [
+              { type: "text", text: String((medicines || []).length) },
+              { type: "text", text: medicineList }
+            ]
+          }
+        ]
+      });
+    }
+
+    logger.info(`[whatsapp] Pharmacy alert sent`, { type, tenantId, recipient });
     return;
   }
 

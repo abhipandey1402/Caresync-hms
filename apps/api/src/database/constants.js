@@ -14,7 +14,9 @@ export const COLLECTION_NAMES = Object.freeze({
   rxTemplates: "rx_templates",
   services: "services",
   medicineMasters: "medicine_masters",
-  diagnosisMasters: "diagnosis_masters"
+  diagnosisMasters: "diagnosis_masters",
+  pharmacyAlertLogs: "pharmacy_alert_logs",
+  pharmacySales: "pharmacy_sales"
 });
 
 export const USER_ROLES = Object.freeze([
