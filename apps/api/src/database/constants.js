@@ -18,7 +18,8 @@ export const COLLECTION_NAMES = Object.freeze({
   pharmacyAlertLogs: "pharmacy_alert_logs",
   pharmacySales: "pharmacy_sales",
   wards: "wards",
-  beds: "beds"
+  beds: "beds",
+  reportJobs: "report_jobs"
 });
 
 export const USER_ROLES = Object.freeze([

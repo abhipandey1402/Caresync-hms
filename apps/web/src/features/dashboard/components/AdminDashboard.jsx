@@ -22,17 +22,58 @@ import {
   adminRecentTransactions
 } from '../utils/mockData';
 
+import { useToast } from '@/components/ui/Toast';
+import api from '@/services/api';
+
 export const AdminDashboard = () => {
   const { user, tenant } = useAuthStore();
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [dateFilter, setDateFilter] = useState('today'); // 'today', 'week', 'month', 'all'
+
+  const fetchDashboard = async () => {
+    setLoading(true);
+    try {
+      let query = '';
+      const now = new Date();
+      if (dateFilter === 'today') {
+        query = '?date=today';
+      } else if (dateFilter === 'week') {
+        const from = new Date(now);
+        from.setDate(now.getDate() - 7);
+        query = `?from=${from.toISOString()}&to=${now.toISOString()}`;
+      } else if (dateFilter === 'month') {
+        const from = new Date(now);
+        from.setMonth(now.getMonth() - 1);
+        query = `?from=${from.toISOString()}&to=${now.toISOString()}`;
+      } else if (dateFilter === 'all') {
+        const from = new Date('2020-01-01');
+        query = `?from=${from.toISOString()}&to=${now.toISOString()}`;
+      }
+
+      const res = await api.get(`/reports/dashboard${query}`);
+      setDashboardData(res.data?.data);
+    } catch (err) {
+      addToast('Failed to load dashboard data', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExport = async (type) => {
+    try {
+      addToast(`Requesting ${type} export...`, 'info');
+      const res = await api.post('/reports/export', { type, from: new Date().toISOString(), to: new Date().toISOString() });
+      addToast(`Export requested! Job ID: ${res.data?.data?.jobId}`, 'success');
+    } catch (err) {
+      addToast('Failed to request export', 'error');
+    }
+  };
 
   useEffect(() => {
-    // Simulate API fetch
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
+    fetchDashboard();
+  }, [dateFilter]);
 
   const today = new Date().toLocaleDateString('en-IN', {
     weekday: 'long',
@@ -48,11 +89,24 @@ export const AdminDashboard = () => {
         subtitle={`${tenant?.name || 'Clinic'} · ${today}`}
         actions={
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 px-3 py-2 bg-white border border-brand-border rounded-lg text-sm font-medium text-[#0F1F17] hover:bg-brand-muted">
-              <CalendarIcon size={16} /> Today
-            </button>
+            <div className="flex items-center bg-white border border-brand-border rounded-lg overflow-hidden">
+              {[
+                { id: 'today', label: 'Today' },
+                { id: 'week', label: '7 Days' },
+                { id: 'month', label: '30 Days' },
+                { id: 'all', label: 'All Time' }
+              ].map(f => (
+                <button 
+                  key={f.id}
+                  onClick={() => setDateFilter(f.id)}
+                  className={`px-3 py-1.5 text-xs font-bold ${dateFilter === f.id ? 'bg-brand-green text-white' : 'text-brand-text-sec hover:bg-brand-muted'} border-r border-brand-border last:border-r-0`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
             <button 
-              onClick={() => { setLoading(true); setTimeout(() => setLoading(false), 800); }}
+              onClick={fetchDashboard}
               className="p-2 bg-white border border-brand-border rounded-lg text-[#0F1F17] hover:bg-brand-muted"
             >
               <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
@@ -67,52 +121,52 @@ export const AdminDashboard = () => {
           icon={<IndianRupee size={20} />}
           title="Today's Revenue"
           titleHi="आज की कमाई"
-          value="₹84,500"
+          value={`₹${((dashboardData?.revenue?.collected || 0) / 100).toLocaleString('en-IN')}`}
           highlight={true}
-          trend={{ direction: 'up', value: '12%', label: 'vs yesterday' }}
+          trend={{ direction: 'up', value: 'Live', label: 'aggregation' }}
           subStats={[
-            { label: 'Collected', value: '₹72,000', color: 'green' },
-            { label: 'Pending', value: '₹12,500', color: 'gold' }
+            { label: 'Total', value: `₹${((dashboardData?.revenue?.total || 0) / 100).toLocaleString('en-IN')}`, color: 'grey' },
+            { label: 'Pending', value: `₹${((dashboardData?.revenue?.pending || 0) / 100).toLocaleString('en-IN')}`, color: 'gold' }
           ]}
           loading={loading}
         />
         <KPICard 
           icon={<Users size={20} />}
           title="OPD Today"
-          value="42"
-          trend={{ direction: 'up', value: '5 more', label: '' }}
+          value={dashboardData?.opd?.total || 0}
+          trend={{ direction: 'neutral', value: dashboardData?.opd?.pending || 0, label: 'waiting' }}
           subStats={[
-            { label: 'Completed', value: '38', color: 'green' },
-            { label: 'Pending', value: '4', color: 'gold' }
+            { label: 'Completed', value: dashboardData?.opd?.completed || 0, color: 'green' },
+            { label: 'Cancelled', value: dashboardData?.opd?.cancelled || 0, color: 'grey' }
           ]}
           loading={loading}
         />
         <KPICard 
           icon={<BedDouble size={20} />}
           title="Beds Occupied"
-          value="12/20"
-          trend={{ direction: 'neutral', value: '60%', label: 'occupancy' }}
+          value={`${dashboardData?.ipd?.occupied || 0}/${dashboardData?.ipd?.total || 0}`}
+          trend={{ direction: 'neutral', value: 'Live', label: 'occupancy' }}
           subStats={[
-            { label: 'Admitted Today', value: '3', color: 'grey' },
-            { label: 'Discharged', value: '1', color: 'grey' }
+            { label: 'Admitted Today', value: dashboardData?.ipd?.admittedToday || 0, color: 'grey' },
+            { label: 'Discharged', value: dashboardData?.ipd?.dischargedToday || 0, color: 'grey' }
           ]}
           loading={loading}
         />
         <KPICard 
           icon={<AlertCircle size={20} />}
           title="Pending Dues"
-          value="₹28,400"
-          trend={{ direction: 'down', value: '8 patients', label: '' }}
+          value={`₹${((dashboardData?.revenue?.pending || 0) / 100).toLocaleString('en-IN')}`}
+          trend={{ direction: 'neutral', value: 'Action Required', label: '' }}
           action={{ label: 'Collect Now →', href: '/dashboard/billing' }}
           loading={loading}
         />
         <KPICard 
           icon={<Pill size={20} />}
           title="Pharma Sales"
-          value="₹15,200"
-          trend={{ direction: 'up', value: '18%', label: 'vs yest.' }}
+          value={`₹${((dashboardData?.pharmacy?.salesToday || 0) / 100).toLocaleString('en-IN')}`}
+          trend={{ direction: 'neutral', value: 'Today', label: '' }}
           subStats={[
-            { label: 'Items Sold', value: '23', color: 'grey' }
+            { label: 'Transactions', value: 'Live', color: 'grey' }
           ]}
           loading={loading}
         />
@@ -146,18 +200,18 @@ export const AdminDashboard = () => {
         <DashboardCard title="OPD by Hour" loading={loading} className="h-96" noPadding>
           <div className="p-4 h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={opdHourlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={dashboardData?.revenueByHour?.map(h => ({ time: h.hour, revenue: h.amount / 100 })) || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="colorPatients" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#2E9B59" stopOpacity={0.3}/>
                     <stop offset="95%" stopColor="#2E9B59" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
                 <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
-                <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                <Area type="monotone" dataKey="patients" stroke="#2E9B59" strokeWidth={3} fillOpacity={1} fill="url(#colorPatients)" />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} tickFormatter={(val) => `₹${val}`} />
+                <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} formatter={(val) => [`₹${val}`, 'Revenue']} />
+                <Area type="monotone" dataKey="revenue" stroke="#2E9B59" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -241,7 +295,7 @@ export const AdminDashboard = () => {
 
       {/* Row 4: Tables */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        <DashboardCard title="Doctor Collection — Today" action={{ label: 'Export', href: '#' }} loading={loading}>
+        <DashboardCard title="Doctor Collection — Today" action={{ label: 'Export', onClick: () => handleExport('doctor-collection') }} loading={loading}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead className="text-xs text-brand-text-sec border-b border-brand-border">
@@ -253,22 +307,32 @@ export const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-brand-border">
-                {adminDoctorCollection.map((d, idx) => (
-                  <tr key={idx}>
-                    <td className="py-3 font-bold text-[#0F1F17]">{d.name}</td>
-                    <td className="py-3 text-center">{d.opd}</td>
-                    <td className="py-3 text-right font-mono font-bold">{d.collected}</td>
-                    <td className="py-3 pl-4">
-                      <div className="w-full bg-brand-muted h-2 rounded-full overflow-hidden">
-                        <div className={`bg-brand-green h-full opacity-${d.opacity}`} style={{ width: d.progress }}></div>
-                      </div>
-                    </td>
+                {dashboardData?.doctorWise?.map((d, idx) => {
+                  const maxCollection = Math.max(...dashboardData.doctorWise.map(doc => doc.collection || 1));
+                  const progress = `${Math.round(((d.collection || 0) / maxCollection) * 100)}%`;
+                  
+                  return (
+                    <tr key={idx}>
+                      <td className="py-3 font-bold text-[#0F1F17]">{d.doctor}</td>
+                      <td className="py-3 text-center">{d.opd}</td>
+                      <td className="py-3 text-right font-mono font-bold">₹{((d.collection || 0) / 100).toLocaleString('en-IN')}</td>
+                      <td className="py-3 pl-4">
+                        <div className="w-full bg-brand-muted h-2 rounded-full overflow-hidden">
+                          <div className={`bg-brand-green h-full opacity-100`} style={{ width: progress }}></div>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {(!dashboardData?.doctorWise || dashboardData.doctorWise.length === 0) && (
+                  <tr>
+                    <td colSpan="4" className="py-4 text-center text-brand-text-sec text-xs italic">No collection data for today</td>
                   </tr>
-                ))}
+                )}
                 <tr className="bg-brand-bg font-bold">
                   <td className="py-3 text-[#0F1F17]">Total</td>
-                  <td className="py-3 text-center">42</td>
-                  <td className="py-3 text-right font-mono text-brand-green">₹84,500</td>
+                  <td className="py-3 text-center">{dashboardData?.doctorWise?.reduce((s, d) => s + d.opd, 0) || 0}</td>
+                  <td className="py-3 text-right font-mono text-brand-green">₹{((dashboardData?.revenue?.collected || 0) / 100).toLocaleString('en-IN')}</td>
                   <td></td>
                 </tr>
               </tbody>

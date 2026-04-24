@@ -8,6 +8,7 @@ import pharmacyRoutes from "./pharmacy.routes.js";
 import ipdRoutes from "./ipd.routes.js";
 import prescriptionRoutes from "./prescription.routes.js";
 import opdRoutes from "./opd.routes.js";
+import reportRoutes from "./report.routes.js";
 import { echoPayload, getApiConventions, getApiRoot } from "../controllers/system.controller.js";
 
 const router = Router();
@@ -25,6 +26,7 @@ router.use(patientRoutes);
 router.use(prescriptionRoutes);
 router.use(pharmacyRoutes);
 router.use(ipdRoutes);
+router.use(reportRoutes);
 router.use(opdRoutes);
 
 export default router;
