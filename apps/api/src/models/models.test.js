@@ -4,6 +4,7 @@ import { Inventory } from "./inventory.model.js";
 import { Otp } from "./otp.model.js";
 import { Patient } from "./patient.model.js";
 import { Prescription } from "./prescription.model.js";
+import { RxTemplate } from "./rxTemplate.model.js";
 import { Sequence } from "./sequence.model.js";
 import { Tenant } from "./tenant.model.js";
 import { User } from "./user.model.js";
@@ -33,6 +34,9 @@ describe("mongoose model definitions", () => {
     expect(Prescription.schema.indexes()).toEqual(
       expect.arrayContaining([[{ tenantId: 1, visitId: 1 }, expect.objectContaining({ unique: true })]])
     );
+    expect(RxTemplate.schema.indexes()).toEqual(
+      expect.arrayContaining([[{ tenantId: 1, doctorId: 1, name: 1 }, expect.objectContaining({ unique: true })]])
+    );
     expect(Bill.schema.indexes()).toEqual(
       expect.arrayContaining([[{ tenantId: 1, billNumber: 1 }, expect.objectContaining({ unique: true })]])
     );
@@ -46,7 +50,7 @@ describe("mongoose model definitions", () => {
       ])
     );
     expect(Sequence.schema.indexes()).toEqual(
-      expect.arrayContaining([[{ tenantId: 1, type: 1 }, expect.objectContaining({ unique: true })]])
+      expect.arrayContaining([[{ tenantId: 1, type: 1, meta: 1 }, expect.objectContaining({ unique: true })]])
     );
     expect(Otp.schema.indexes()).toEqual(
       expect.arrayContaining([[{ createdAt: 1 }, expect.objectContaining({ expireAfterSeconds: 600 })]])

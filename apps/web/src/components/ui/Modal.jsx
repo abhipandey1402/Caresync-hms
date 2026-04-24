@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
   const modalRef = useRef(null);
@@ -46,7 +47,7 @@ export const Modal = ({ isOpen, onClose, title, children, className = '' }) => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className={`bg-white rounded-2xl shadow-xl overflow-hidden w-full max-w-md ${className}`}
+            className={cn('bg-white rounded-2xl shadow-xl overflow-hidden w-full max-w-md flex flex-col', className)}
             role="dialog"
             aria-modal="true"
           >

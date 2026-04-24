@@ -58,7 +58,7 @@ const ALL_ACTIONS = [
     label: 'Prescription',
     labelHi: 'पर्चा लिखें',
     icon: <FileText size={28} />,
-    href: '/dashboard/patients',
+    href: '/dashboard/prescriptions/new',
     roles: ['admin', 'doctor']
   },
   {

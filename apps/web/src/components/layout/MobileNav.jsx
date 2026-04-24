@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Home, Users, Stethoscope, Receipt, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,7 @@ export const MobileNav = ({ onMoreClick }) => {
   const visibleTabs = MAIN_TABS.filter(tab => {
     if (userRole === 'pharmacist' && tab.id === 'opd') return false;
     if (userRole === 'nurse' && tab.id === 'billing') return false;
+    if (userRole === 'billing' && tab.id === 'patients') return false;
     return true;
   }).slice(0, 4);
 

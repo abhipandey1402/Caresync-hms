@@ -17,7 +17,7 @@ const NAV_ITEMS = [
       { id: 'home', label: 'Dashboard', icon: Home, href: '/dashboard', roles: ['admin', 'doctor', 'receptionist', 'pharmacist', 'nurse'] },
       { id: 'patients', label: 'Patients', icon: Users, href: '/dashboard/patients', roles: ['admin', 'doctor', 'receptionist'] },
       { id: 'opd', label: 'OPD Queue', icon: Stethoscope, href: '/dashboard/opd', roles: ['admin', 'doctor', 'receptionist', 'nurse'], badge: { type: 'count', value: '3' } },
-      { id: 'billing', label: 'Billing', icon: Receipt, href: '/dashboard/billing', roles: ['admin', 'receptionist'], badge: { type: 'warning', value: '2' } }
+      { id: 'billing', label: 'Billing', icon: Receipt, href: '/dashboard/billing', roles: ['admin', 'receptionist', 'billing', 'doctor', 'pharmacist'], badge: { type: 'warning', value: '2' } }
     ]
   },
   {

@@ -172,15 +172,15 @@ export const getPatientProfile = async (tenantId, patientId, { visitLimit = 10, 
 
   const totalVisits = await Visit.countDocuments({ patientId, tenantId });
 
-  // Get pending balance (sum of grandTotal - paidAmount for non-paid bills)
+  // Get pending balance from finalized outstanding bills
   const pendingBills = await Bill.find({ 
     patientId, 
     tenantId, 
-    status: { $ne: "paid" } 
+    status: { $in: ["unpaid", "partial"] } 
   }).lean();
 
   const pendingBalance = pendingBills.reduce((acc, bill) => {
-    return acc + (bill.grandTotal - (bill.paidAmount || 0));
+    return acc + (bill.balance || 0);
   }, 0);
 
   const lastVisit = visits.length > 0 ? {

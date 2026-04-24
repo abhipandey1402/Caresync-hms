@@ -11,6 +11,7 @@ export const COLLECTION_NAMES = Object.freeze({
   sequences: "sequences",
   notifications: "notifications",
   otps: "otps",
+  rxTemplates: "rx_templates",
   services: "services",
   medicineMasters: "medicine_masters",
   diagnosisMasters: "diagnosis_masters"
@@ -40,10 +41,9 @@ export const VISIT_STATUSES = Object.freeze([
 export const BILL_STATUSES = Object.freeze([
   "draft",
   "unpaid",
-  "partially_paid",
+  "partial",
   "paid",
-  "cancelled",
-  "refunded"
+  "cancelled"
 ]);
 
 export const IPD_STATUSES = Object.freeze([
@@ -58,4 +58,9 @@ export const NOTIFICATION_STATUSES = Object.freeze([
   "sent",
   "failed",
   "read"
+]);
+
+export const PRESCRIPTION_STATUSES = Object.freeze([
+  "draft",
+  "finalized"
 ]);

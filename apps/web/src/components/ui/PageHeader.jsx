@@ -42,7 +42,7 @@ export const PageHeader = ({
         </div>
         
         {actions && (
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:shrink-0 sm:justify-end">
             {actions}
           </div>
         )}

@@ -5,6 +5,7 @@ import { DoctorDashboard } from './DoctorDashboard';
 import { ReceptionistDashboard } from './ReceptionistDashboard';
 import { PharmacistDashboard } from './PharmacistDashboard';
 import { NurseDashboard } from './NurseDashboard';
+import { BillingPage } from '@/features/billing/components/BillingPage';
 import { Navigate } from 'react-router-dom';
 
 export const DashboardHome = () => {
@@ -23,6 +24,8 @@ export const DashboardHome = () => {
       return <PharmacistDashboard />;
     case 'nurse':
       return <NurseDashboard />;
+    case 'billing':
+      return <BillingPage />;
     default:
       // Fallback or handle unknown roles
       return <Navigate to="/login" replace />;

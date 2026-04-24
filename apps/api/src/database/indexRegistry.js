@@ -25,6 +25,7 @@ export const INDEXES_TO_CREATE = Object.freeze([
     options: { unique: true }
   },
   { collection: COLLECTION_NAMES.prescriptions, index: { tenantId: 1, patientId: 1, createdAt: -1 } },
+  { collection: COLLECTION_NAMES.prescriptions, index: { tenantId: 1, doctorId: 1, createdAt: -1 } },
 
   { collection: COLLECTION_NAMES.bills, index: { tenantId: 1, billNumber: 1 }, options: { unique: true } },
   { collection: COLLECTION_NAMES.bills, index: { tenantId: 1, patientId: 1, createdAt: -1 } },
@@ -54,12 +55,23 @@ export const INDEXES_TO_CREATE = Object.freeze([
     options: { expireAfterSeconds: 63072000 }
   },
 
-  { collection: COLLECTION_NAMES.sequences, index: { tenantId: 1, type: 1 }, options: { unique: true } },
+  {
+    collection: COLLECTION_NAMES.sequences,
+    index: { tenantId: 1, type: 1, meta: 1 },
+    options: { unique: true }
+  },
 
   { collection: COLLECTION_NAMES.notifications, index: { tenantId: 1, createdAt: -1 } },
 
   { collection: COLLECTION_NAMES.otps, index: { createdAt: 1 }, options: { expireAfterSeconds: 600 } },
   { collection: COLLECTION_NAMES.otps, index: { phone: 1, otp: 1 } },
+
+  {
+    collection: COLLECTION_NAMES.rxTemplates,
+    index: { tenantId: 1, doctorId: 1, name: 1 },
+    options: { unique: true }
+  },
+  { collection: COLLECTION_NAMES.rxTemplates, index: { tenantId: 1, speciality: 1, createdAt: -1 } },
 
   { collection: COLLECTION_NAMES.services, index: { tenantId: 1, code: 1 }, options: { unique: true } },
   { collection: COLLECTION_NAMES.services, index: { tenantId: 1, category: 1, isActive: 1 } },

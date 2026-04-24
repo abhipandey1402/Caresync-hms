@@ -7,6 +7,7 @@ const notificationSchema = createTenantScopedSchema(
     channel: { type: String, enum: ["sms", "whatsapp", "email", "in_app"], required: true },
     recipient: { type: String, required: true, trim: true },
     template: { type: String, trim: true },
+    resourceId: { type: mongoose.Schema.Types.ObjectId, default: null },
     status: { type: String, enum: NOTIFICATION_STATUSES, default: "queued" },
     payload: { type: mongoose.Schema.Types.Mixed, default: {} },
     sentAt: { type: Date, default: null }

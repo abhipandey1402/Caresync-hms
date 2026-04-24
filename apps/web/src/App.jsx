@@ -27,6 +27,8 @@ import { DashboardShell } from './components/layout/DashboardShell';
 import { DashboardHome } from './features/dashboard/components/DashboardHome';
 import { NotificationCenter } from './features/dashboard/components/NotificationCenter';
 import { OpdPage } from './features/opd/components/OpdPage';
+import { BillingPage } from './features/billing/components/BillingPage';
+import { PrescriptionPage } from './features/prescriptions/components/PrescriptionPage';
 
 function LandingPage() {
   return (
@@ -70,8 +72,8 @@ export default function App() {
           {/* Placeholders for upcoming epics */}
           <Route path="opd" element={<ProtectedRoute resource="opd" action="read"><OpdPage /></ProtectedRoute>} />
           <Route path="opd/new" element={<ProtectedRoute resource="opd" action="write"><OpdPage /></ProtectedRoute>} />
-          <Route path="billing" element={<div className="p-4">Billing Module Placeholder</div>} />
-          <Route path="billing/new" element={<div className="p-4">New Bill Placeholder</div>} />
+          <Route path="billing" element={<ProtectedRoute resource="billing" action="read"><BillingPage /></ProtectedRoute>} />
+          <Route path="billing/new" element={<ProtectedRoute resource="billing" action="write"><BillingPage /></ProtectedRoute>} />
           <Route path="pharmacy" element={<div className="p-4">Pharmacy Module Placeholder</div>} />
           <Route path="pharmacy/pos" element={<div className="p-4">Pharmacy POS Placeholder</div>} />
           <Route path="pharmacy/purchase" element={<div className="p-4">Purchase Entry Placeholder</div>} />
@@ -82,8 +84,8 @@ export default function App() {
           <Route path="ipd/admit" element={<div className="p-4">Admit Patient Placeholder</div>} />
           <Route path="ipd/vitals" element={<div className="p-4">Vitals Placeholder</div>} />
           <Route path="reports" element={<div className="p-4">Reports Module Placeholder</div>} />
-          <Route path="prescriptions" element={<div className="p-4">Prescriptions Placeholder</div>} />
-          <Route path="prescriptions/new" element={<div className="p-4">New Prescription Placeholder</div>} />
+          <Route path="prescriptions" element={<ProtectedRoute resource="emr" action="read"><PrescriptionPage /></ProtectedRoute>} />
+          <Route path="prescriptions/new" element={<ProtectedRoute resource="emr" action="write"><PrescriptionPage /></ProtectedRoute>} />
         </Route>
       </Routes>
     );

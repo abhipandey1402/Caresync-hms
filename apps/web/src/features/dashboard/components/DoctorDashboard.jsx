@@ -3,7 +3,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { KPICard } from '@/components/ui/KPICard';
 import { DashboardCard } from '@/components/ui/DashboardCard';
 import { useAuthStore } from '@/store/authStore';
-import { Users, Clock, IndianRupee, FileText, Calendar as CalendarIcon, RefreshCw, ArrowRight } from 'lucide-react';
+import { Users, Clock, IndianRupee, FileText, RefreshCw } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -120,7 +120,7 @@ export const DoctorDashboard = () => {
               </div>
 
               <div className="w-full md:w-48 space-y-3 shrink-0 flex flex-col justify-end h-full mt-auto">
-                <Link to="/dashboard/prescriptions/new?patient=P-00012" className="w-full block text-center px-4 py-3 bg-brand-green text-white rounded-xl font-bold hover:bg-brand-green-mid shadow-sm transition-colors">
+                <Link to="/dashboard/prescriptions/new" className="w-full block text-center px-4 py-3 bg-brand-green text-white rounded-xl font-bold hover:bg-brand-green-mid shadow-sm transition-colors">
                   Start Prescription
                 </Link>
                 <Link to="/dashboard/patients/P-00012" className="w-full block text-center px-4 py-3 bg-white border border-brand-border text-[#0F1F17] rounded-xl font-bold hover:bg-brand-muted transition-colors">
