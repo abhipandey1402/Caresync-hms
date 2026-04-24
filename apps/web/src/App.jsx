@@ -30,6 +30,7 @@ import { OpdPage } from './features/opd/components/OpdPage';
 import { BillingPage } from './features/billing/components/BillingPage';
 import { PrescriptionPage } from './features/prescriptions/components/PrescriptionPage';
 import { PharmacyPage } from './features/pharmacy/components/PharmacyPage';
+import { IpdPage } from './features/ipd/components/IpdPage';
 
 function LandingPage() {
   return (
@@ -78,9 +79,7 @@ export default function App() {
           
           <Route path="pharmacy/*" element={<ProtectedRoute resource="pharmacy" action="read"><PharmacyPage /></ProtectedRoute>} />
           
-          <Route path="ipd" element={<div className="p-4">IPD Module Placeholder</div>} />
-          <Route path="ipd/admit" element={<div className="p-4">Admit Patient Placeholder</div>} />
-          <Route path="ipd/vitals" element={<div className="p-4">Vitals Placeholder</div>} />
+          <Route path="ipd/*" element={<ProtectedRoute resource="ipd" action="read"><IpdPage /></ProtectedRoute>} />
           <Route path="reports" element={<div className="p-4">Reports Module Placeholder</div>} />
           <Route path="prescriptions" element={<ProtectedRoute resource="emr" action="read"><PrescriptionPage /></ProtectedRoute>} />
           <Route path="prescriptions/new" element={<ProtectedRoute resource="emr" action="write"><PrescriptionPage /></ProtectedRoute>} />

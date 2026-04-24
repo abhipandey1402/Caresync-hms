@@ -89,7 +89,11 @@ export const INDEXES_TO_CREATE = Object.freeze([
 
   { collection: COLLECTION_NAMES.pharmacySales, index: { tenantId: 1, billId: 1 }, options: { unique: true } },
   { collection: COLLECTION_NAMES.pharmacySales, index: { tenantId: 1, patientId: 1, createdAt: -1 } },
-  { collection: COLLECTION_NAMES.pharmacySales, index: { tenantId: 1, createdAt: -1 } }
+  { collection: COLLECTION_NAMES.pharmacySales, index: { tenantId: 1, createdAt: -1 } },
+
+  { collection: COLLECTION_NAMES.wards, index: { tenantId: 1, name: 1 }, options: { unique: true } },
+  { collection: COLLECTION_NAMES.beds, index: { tenantId: 1, wardId: 1, bedNumber: 1 }, options: { unique: true } },
+  { collection: COLLECTION_NAMES.beds, index: { tenantId: 1, status: 1 } }
 ]);
 
 export const serializeIndexShape = (index = {}) => JSON.stringify(index);

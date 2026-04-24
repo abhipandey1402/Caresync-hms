@@ -1,4 +1,5 @@
 export { AuditLog } from "./auditLog.model.js";
+export { Bed } from "./bed.model.js";
 export { Bill } from "./bill.model.js";
 export { DiagnosisMaster } from "./diagnosisMaster.model.js";
 export { Inventory } from "./inventory.model.js";
@@ -15,3 +16,4 @@ export { Service } from "./service.model.js";
 export { Tenant } from "./tenant.model.js";
 export { User } from "./user.model.js";
 export { Visit } from "./visit.model.js";
+export { Ward } from "./ward.model.js";

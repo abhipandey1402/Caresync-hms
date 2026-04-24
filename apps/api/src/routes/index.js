@@ -5,6 +5,7 @@ import authRoutes from "./auth.routes.js";
 import billingRoutes from "./billing.routes.js";
 import patientRoutes from "./patient.routes.js";
 import pharmacyRoutes from "./pharmacy.routes.js";
+import ipdRoutes from "./ipd.routes.js";
 import prescriptionRoutes from "./prescription.routes.js";
 import opdRoutes from "./opd.routes.js";
 import { echoPayload, getApiConventions, getApiRoot } from "../controllers/system.controller.js";
@@ -23,6 +24,7 @@ router.use(billingRoutes);
 router.use(patientRoutes);
 router.use(prescriptionRoutes);
 router.use(pharmacyRoutes);
+router.use(ipdRoutes);
 router.use(opdRoutes);
 
 export default router;
