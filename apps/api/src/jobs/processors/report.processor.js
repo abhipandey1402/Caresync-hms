@@ -59,6 +59,27 @@ export const processReport = async (payload, messageReceiptHandle) => {
         Total: b.total,
         Paid: b.amountPaid
       }));
+    } else if (reportType === "inventory") {
+      data = await reportService.getInventoryList(tenantId);
+      data = data.map(i => ({
+        Name: i.name,
+        Batch: i.batchNumber,
+        Category: i.category,
+        Quantity: i.quantity,
+        Min_Stock: i.minStock,
+        Expiry: i.expiryDate ? new Date(i.expiryDate).toLocaleDateString() : 'N/A',
+        Rate: i.rate
+      }));
+    } else if (reportType === "patients") {
+      data = await reportService.getPatientsList(tenantId);
+      data = data.map(p => ({
+        UHID: p.uhid,
+        Name: p.name,
+        Phone: p.phone,
+        Gender: p.gender,
+        DOB: p.dateOfBirth ? new Date(p.dateOfBirth).toLocaleDateString() : 'N/A',
+        Created: new Date(p.createdAt).toLocaleDateString()
+      }));
     }
 
     const csv = convertToCSV(data);

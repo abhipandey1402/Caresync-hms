@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
-import { Visit, Bill, IpdAdmission, Bed, ReportJob, User } from "../models/index.js";
+import mongoose from "mongoose";
+import { Visit, Bill, IpdAdmission, Bed, ReportJob, User, Patient, Inventory } from "../models/index.js";
 import { cacheGet, cacheSet } from "../shared/cache.js";
 import { queue } from "../shared/adapters/queue.adapter.js";
 import { nanoid } from "nanoid";
@@ -214,6 +215,43 @@ export const getOutstandingDues = async (tenantId) => {
   }).populate("patientId", "name phone uhid").lean();
 };
 
+export const getPatientInsights = async (tenantId, { from, to }) => {
+  const start = dayjs(from).startOf("day").toDate();
+  const end = dayjs(to).endOf("day").toDate();
+
+  const [totalPatients, newPatients, visitStats] = await Promise.all([
+    Patient.countDocuments({ tenantId }),
+    Patient.countDocuments({ tenantId, createdAt: { $gte: start, $lte: end } }),
+    Patient.aggregate([
+      { $match: { tenantId: new mongoose.Types.ObjectId(tenantId), createdAt: { $gte: start, $lte: end } } },
+      { $group: { _id: "$gender", count: { $sum: 1 } } }
+    ])
+  ]);
+
+  return { totalPatients, newPatients, visitStats };
+};
+
+export const getInventoryReports = async (tenantId) => {
+  const [totalItems, lowStock, expiringSoon] = await Promise.all([
+    Inventory.countDocuments({ tenantId }),
+    Inventory.countDocuments({ tenantId, $expr: { $lte: ["$quantity", "$minStock"] } }),
+    Inventory.countDocuments({ 
+      tenantId, 
+      expiryDate: { $lte: dayjs().add(3, "month").toDate() } 
+    })
+  ]);
+
+  return { totalItems, lowStock, expiringSoon };
+};
+
+export const getPatientsList = async (tenantId) => {
+  return Patient.find({ tenantId }).lean();
+};
+
+export const getInventoryList = async (tenantId) => {
+  return Inventory.find({ tenantId }).lean();
+};
+
 export const requestExport = async (tenantId, userId, params) => {
   const jobId = nanoid(12);
 
@@ -255,7 +293,16 @@ export const getExportJobStatus = async (tenantId, jobId) => {
   
   return {
     status: job.status,
-    url: job.pdfKey ? `/api/v1/storage/download?key=${job.pdfKey}` : null, // Assuming you have a generic storage download route, or presigned URL
-    pdfKey: job.pdfKey
+    url: job.pdfKey ? `/api/v1/storage/download?key=${job.pdfKey}` : null,
+    pdfKey: job.pdfKey,
+    createdAt: job.createdAt,
+    reportType: job.reportType
   };
+};
+
+export const getRecentExportJobs = async (tenantId, userId) => {
+  return ReportJob.find({ tenantId, userId })
+    .sort({ createdAt: -1 })
+    .limit(10)
+    .lean();
 };

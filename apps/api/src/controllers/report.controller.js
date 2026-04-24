@@ -53,3 +53,30 @@ export const getOutstandingDues = async (req, res, next) => {
     next(err);
   }
 };
+
+export const getRecentExportJobs = async (req, res, next) => {
+  try {
+    const data = await reportService.getRecentExportJobs(req.user.tenantId, req.user._id);
+    return sendOk(res, data, "Recent export jobs retrieved successfully");
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getPatientInsights = async (req, res, next) => {
+  try {
+    const data = await reportService.getPatientInsights(req.user.tenantId, req.query);
+    return sendOk(res, data, "Patient insights retrieved successfully");
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getInventoryReports = async (req, res, next) => {
+  try {
+    const data = await reportService.getInventoryReports(req.user.tenantId);
+    return sendOk(res, data, "Inventory reports retrieved successfully");
+  } catch (err) {
+    next(err);
+  }
+};

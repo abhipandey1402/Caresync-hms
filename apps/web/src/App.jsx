@@ -31,6 +31,7 @@ import { BillingPage } from './features/billing/components/BillingPage';
 import { PrescriptionPage } from './features/prescriptions/components/PrescriptionPage';
 import { PharmacyPage } from './features/pharmacy/components/PharmacyPage';
 import { IpdPage } from './features/ipd/components/IpdPage';
+import { ReportsPage } from './features/reports/components/ReportsPage';
 
 function LandingPage() {
   return (
@@ -80,7 +81,7 @@ export default function App() {
           <Route path="pharmacy/*" element={<ProtectedRoute resource="pharmacy" action="read"><PharmacyPage /></ProtectedRoute>} />
           
           <Route path="ipd/*" element={<ProtectedRoute resource="ipd" action="read"><IpdPage /></ProtectedRoute>} />
-          <Route path="reports" element={<div className="p-4">Reports Module Placeholder</div>} />
+          <Route path="reports" element={<ProtectedRoute resource="reports" action="read"><ReportsPage /></ProtectedRoute>} />
           <Route path="prescriptions" element={<ProtectedRoute resource="emr" action="read"><PrescriptionPage /></ProtectedRoute>} />
           <Route path="prescriptions/new" element={<ProtectedRoute resource="emr" action="write"><PrescriptionPage /></ProtectedRoute>} />
         </Route>

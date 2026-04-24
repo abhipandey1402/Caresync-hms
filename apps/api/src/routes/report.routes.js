@@ -12,7 +12,10 @@ import {
   requestExport,
   getExportJobStatus,
   getRevenueReport,
-  getOutstandingDues
+  getOutstandingDues,
+  getRecentExportJobs,
+  getPatientInsights,
+  getInventoryReports
 } from "../controllers/report.controller.js";
 
 const router = Router();
@@ -50,6 +53,24 @@ router.get(
   can("reports", "read"),
   validate(getExportJobSchema),
   getExportJobStatus
+);
+
+router.get(
+  "/reports/exports/recent",
+  can("reports", "read"),
+  getRecentExportJobs
+);
+
+router.get(
+  "/reports/patients",
+  can("reports", "read"),
+  getPatientInsights
+);
+
+router.get(
+  "/reports/inventory",
+  can("reports", "read"),
+  getInventoryReports
 );
 
 export default router;

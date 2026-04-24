@@ -10,7 +10,7 @@ export const getDashboardSchema = z.object({
 
 export const requestExportSchema = z.object({
   body: z.object({
-    type: z.enum(["revenue", "doctor-collection", "outstanding-dues"]),
+    type: z.enum(["revenue", "doctor-collection", "outstanding-dues", "inventory", "patients"]),
     from: z.string().optional(),
     to: z.string().optional()
   })
