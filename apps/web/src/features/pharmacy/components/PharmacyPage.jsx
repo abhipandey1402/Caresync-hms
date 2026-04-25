@@ -5,6 +5,7 @@ import { PharmacyTabs } from './PharmacyTabs';
 import { InventoryTab } from './InventoryTab';
 import { AlertsTab } from './AlertsTab';
 import { POSTab } from './POSTab';
+import { SalesLogTab } from './SalesLogTab';
 
 export const PharmacyPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,7 +20,7 @@ export const PharmacyPage = () => {
       <PageHeader
         title="Pharmacy Dashboard"
         titleHi="फ़ार्मेसी डेस्क"
-        subtitle="Manage inventory, batches, point-of-sale, and alerts"
+        subtitle="Manage inventory, batches, point-of-sale, and sales logs"
         actions={<></>}
       />
 
@@ -30,7 +31,7 @@ export const PharmacyPage = () => {
           {currentTab === 'pos' && <POSTab />}
           {currentTab === 'inventory' && <InventoryTab />}
           {currentTab === 'alerts' && <AlertsTab />}
-          {currentTab === 'sales' && <div>Sales Log view coming soon...</div>}
+          {currentTab === 'sales' && <SalesLogTab />}
         </div>
       </div>
     </div>

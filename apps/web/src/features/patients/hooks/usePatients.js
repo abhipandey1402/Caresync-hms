@@ -6,30 +6,43 @@ import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 /**
  * Hook for searching patients with offline fallback to Dexie cache.
  */
-export const usePatientSearch = (q) => {
+export const usePatientSearch = (q, page = 1, limit = 10) => {
   const isOnline = useNetworkStatus();
+  const skip = (page - 1) * limit;
 
   return useQuery({
-    queryKey: ['patients', 'search', q],
+    queryKey: ['patients', 'search', q, page, limit],
     queryFn: async () => {
       if (!isOnline) {
         // Fallback to local IndexedDB
         if (!q || q.length < 2) {
-          return db.patientsCache.orderBy('updatedAt').reverse().limit(10).toArray();
+          return {
+            items: await db.patientsCache.orderBy('updatedAt').reverse().offset(skip).limit(limit).toArray(),
+            total: await db.patientsCache.count()
+          };
         }
         
-        return db.patientsCache
-          .filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || (p.phone && p.phone.includes(q)) || (p.uhid && p.uhid.includes(q.toUpperCase())))
-          .limit(10).toArray();
+        const filtered = db.patientsCache
+          .filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || (p.phone && p.phone.includes(q)) || (p.uhid && p.uhid.includes(q.toUpperCase())));
+        
+        return {
+          items: await filtered.offset(skip).limit(limit).toArray(),
+          total: await filtered.count()
+        };
       }
-      const { data } = await api.get(`/patients?q=${encodeURIComponent(q)}`);
+      const { data } = await api.get(`/patients`, {
+        params: { q, limit, skip }
+      });
+      
+      const result = data.data?.items || data.data || [];
+      const total = data.data?.total || (Array.isArray(result) ? result.length : 0);
       
       // Update cache in background
-      if (data.data?.items) {
-        db.patientsCache.bulkPut(data.data.items).catch(console.error);
+      if (Array.isArray(result)) {
+        db.patientsCache.bulkPut(result).catch(console.error);
       }
       
-      return data.data.items;
+      return { items: result, total };
     },
     staleTime: 30_000,
   });

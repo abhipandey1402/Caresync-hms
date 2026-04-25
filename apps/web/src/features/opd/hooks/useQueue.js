@@ -49,13 +49,11 @@ export const useQueue = (doctorId = null, date = null) => {
     const params = new URLSearchParams();
     if (doctorId) params.set('doctorId', doctorId);
     if (date) params.set('date', date);
-    const url = `/api/v1/opd/queue/live?${params.toString()}`;
+    
+    // Add token as query param for SSE
+    if (token) params.set('token', token);
 
-    // NOTE: EventSource doesn't support custom headers natively in browsers.
-    // We pass the token via cookie (httpOnly cookie already sent), which works
-    // because our auth middleware reads either Bearer or the session.
-    // For SSE we add token as a query param as a workaround.
-    const sseUrl = `${url}${params.toString() ? '&' : '?'}token=${token}`;
+    const sseUrl = `/api/v1/opd/queue/live?${params.toString()}`;
 
     try {
       const es = new EventSource(sseUrl);

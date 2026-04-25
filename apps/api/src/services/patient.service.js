@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { Patient } from "../models/patient.model.js";
 import { Visit } from "../models/visit.model.js";
 import { Bill } from "../models/bill.model.js";
-import { ApiError } from "../utils/ApiError.js";
+import { ApiError } from "../utils/apiError.js";
 import { generateUHID } from "../shared/sequenceGen.js";
 
 const normalizeGender = (gender) => {

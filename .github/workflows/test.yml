@@ -84,7 +84,9 @@ jobs:
         run: npm audit --audit-level=high
 
       - name: Upload coverage report
-        if: ${{ secrets.CODECOV_TOKEN != '' }}
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        if: env.CODECOV_TOKEN != ''
         uses: codecov/codecov-action@v4
         with:
           files: ./apps/api/coverage/lcov.info

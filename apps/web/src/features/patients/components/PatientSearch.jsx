@@ -5,24 +5,32 @@ import { Search, Plus, Phone, Hash, Loader2, CloudOff, User, ArrowRight } from '
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { Pagination } from '@/components/ui/Pagination';
 import { cn } from '@/lib/utils';
 
 export const PatientSearch = () => {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
-  const { data: patients, isLoading } = usePatientSearch(debouncedQuery);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  
+  const { data, isLoading } = usePatientSearch(debouncedQuery, page, pageSize);
+  const patients = data?.items || [];
+  const totalItems = data?.total || 0;
+  
   const isOnline = useNetworkStatus();
   const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(query);
+      setPage(1); // Reset to first page on new search
     }, 300);
     return () => clearTimeout(timer);
   }, [query]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-12">
       <PageHeader
         title="Patient Directory"
         subtitle="Search or register new patients"
@@ -64,7 +72,7 @@ export const PatientSearch = () => {
       </div>
 
       <div className="bg-white border border-brand-border rounded-2xl overflow-hidden shadow-sm">
-        {patients?.length === 0 && !isLoading ? (
+        {patients.length === 0 && !isLoading ? (
           <div className="p-12 text-center flex flex-col items-center">
             <div className="w-16 h-16 bg-brand-bg rounded-2xl flex items-center justify-center mb-4">
               <Search size={28} className="text-brand-green/50" />
@@ -79,52 +87,62 @@ export const PatientSearch = () => {
             </button>
           </div>
         ) : (
-          <div className="divide-y divide-brand-border/50">
-            <AnimatePresence mode="popLayout">
-              {patients?.map((patient) => (
-                <motion.div 
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  key={patient._id} 
-                >
-                  <button
-                    onClick={() => navigate(`/dashboard/patients/${patient._id}`)}
-                    className="w-full text-left p-4 sm:p-5 hover:bg-[#F4FAF6] transition-colors flex items-center justify-between group"
+          <>
+            <div className="divide-y divide-brand-border/50">
+              <AnimatePresence mode="popLayout">
+                {patients.map((patient) => (
+                  <motion.div 
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    key={patient._id} 
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-[#EDF4EF] text-brand-green rounded-full flex items-center justify-center font-bold text-lg shrink-0 group-hover:bg-brand-green group-hover:text-white transition-colors">
-                        {patient.name?.charAt(0)?.toUpperCase()}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-base font-bold text-[#0F1F17] truncate">{patient.name}</p>
-                        <div className="flex items-center gap-3 text-sm text-brand-text-sec mt-0.5 flex-wrap">
-                          <span className="flex items-center gap-1.5 bg-brand-bg px-2 py-0.5 rounded-md font-medium text-xs">
-                            <Hash size={12} />
-                            {patient.uhid || "Pending"}
-                          </span>
-                          <span className="flex items-center gap-1.5 font-medium text-xs">
-                            <Phone size={12} />
-                            {patient.phone}
-                          </span>
+                    <button
+                      onClick={() => navigate(`/dashboard/patients/${patient._id}`)}
+                      className="w-full text-left p-4 sm:p-5 hover:bg-[#F4FAF6] transition-colors flex items-center justify-between group"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-[#EDF4EF] text-brand-green rounded-full flex items-center justify-center font-bold text-lg shrink-0 group-hover:bg-brand-green group-hover:text-white transition-colors">
+                          {patient.name?.charAt(0)?.toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-base font-bold text-[#0F1F17] truncate">{patient.name}</p>
+                          <div className="flex items-center gap-3 text-sm text-brand-text-sec mt-0.5 flex-wrap">
+                            <span className="flex items-center gap-1.5 bg-brand-bg px-2 py-0.5 rounded-md font-medium text-xs border border-brand-border/50">
+                              <Hash size={12} />
+                              {patient.uhid || "Pending"}
+                            </span>
+                            <span className="flex items-center gap-1.5 font-medium text-xs">
+                              <Phone size={12} />
+                              {patient.phone}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-4 shrink-0">
-                      <span className="hidden sm:inline-flex px-2.5 py-1 bg-brand-bg text-brand-text-sec text-xs font-bold uppercase tracking-wider rounded-lg border border-brand-border">
-                        {patient.gender}
-                      </span>
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-brand-text-sec group-hover:bg-brand-green group-hover:text-white transition-colors">
-                        <ArrowRight size={18} />
+                      
+                      <div className="flex items-center gap-4 shrink-0">
+                        <span className="hidden sm:inline-flex px-2.5 py-1 bg-brand-bg text-brand-text-sec text-xs font-bold uppercase tracking-wider rounded-lg border border-brand-border">
+                          {patient.gender}
+                        </span>
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-brand-text-sec group-hover:bg-brand-green group-hover:text-white transition-colors">
+                          <ArrowRight size={18} />
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+                    </button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+            
+            <Pagination
+              currentPage={page}
+              totalItems={totalItems}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              className="border-t border-brand-border bg-slate-50/50"
+            />
+          </>
         )}
       </div>
     </div>

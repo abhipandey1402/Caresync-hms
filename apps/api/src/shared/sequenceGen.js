@@ -5,7 +5,7 @@ const UHID_MAX = 99999;
 
 export const generateUHID = async (tenantId, session) => {
   const seq = await Sequence.findOneAndUpdate(
-    { tenantId, type: "UHID", prefix: UHID_PREFIX },
+    { tenantId, type: "UHID" },
     [
       {
         $set: {

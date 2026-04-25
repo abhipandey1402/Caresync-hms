@@ -28,7 +28,7 @@ export const NewVisitModal = ({ doctors = [], onClose, onSuccess, tenantId }) =>
     setSearching(true);
     try {
       const res = await api.get('/patients', { params: { q, limit: 8 } });
-      setSearchResults(res.data.data?.patients || res.data.data || []);
+      setSearchResults(res.data.data?.items || res.data.data || []);
     } catch {
       setSearchResults([]);
     } finally {

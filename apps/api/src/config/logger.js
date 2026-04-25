@@ -35,7 +35,7 @@ const isSensitiveKey = (key = "") => {
   );
 };
 
-export const sanitizeForLogging = (value, key = "") => {
+export const sanitizeForLogging = (value, key = "", seen = new WeakSet()) => {
   if (isSensitiveKey(key)) {
     return "[REDACTED]";
   }
@@ -48,20 +48,36 @@ export const sanitizeForLogging = (value, key = "") => {
     };
   }
 
+  if (value === null || typeof value !== "object") {
+    return value;
+  }
+
+  // Handle circular references
+  if (seen.has(value)) {
+    return "[Circular]";
+  }
+
   if (Array.isArray(value)) {
-    return value.map((item) => sanitizeForLogging(item, key));
+    seen.add(value);
+    return value.map((item) => sanitizeForLogging(item, key, seen));
+  }
+
+  // If it's a Mongoose document or has a toJSON method, use it
+  if (typeof value.toJSON === "function") {
+    return sanitizeForLogging(value.toJSON(), key, seen);
   }
 
   if (isPlainObject(value)) {
+    seen.add(value);
     return Object.fromEntries(
       Object.entries(value).map(([entryKey, entryValue]) => [
         entryKey,
-        sanitizeForLogging(entryValue, entryKey)
+        sanitizeForLogging(entryValue, entryKey, seen)
       ])
     );
   }
 
-  return value;
+  return String(value);
 };
 
 export const resolveLogLevel = (env = process.env) => {
